@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import Navbar from '../../components/Navbar'
 
 function Home() {
+    const navigate = useNavigate()
     return (
         <div>
         <Navbar />
@@ -16,7 +18,7 @@ function Home() {
                 <div className="card-body p-4">
                     <h5 className="card-title fw-bold">Registrarse</h5>
                     <p className="card-text text-muted">Regístrate por primera vez para obtener tu QR</p>
-                    <button className="btn btn-success">Ir a registro</button>
+                    <button className="btn btn-success" onClick={() => navigate('/registro')}>Ir a registro</button>
                 </div>
                 </div>
             </div>
