@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 
@@ -17,10 +18,10 @@ function Registro() {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log(formData)
-    }
-
+    e.preventDefault()
+    navigate('/confirmacion')
+}
+    const navigate = useNavigate()
     return (
         <div>
         <Navbar />
