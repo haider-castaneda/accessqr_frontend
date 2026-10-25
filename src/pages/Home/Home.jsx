@@ -27,7 +27,7 @@ function Home() {
                 <div className="card-body p-4">
                     <h5 className="card-title fw-bold">Recuperar QR</h5>
                     <p className="card-text text-muted">Genera un QR nuevo</p>
-                    <button className="btn btn-success">Recuperar</button>
+                    <button className="btn btn-success" onClick={() => navigate('/recuperar-qr')}>Recuperar</button>
                 </div>
                 </div>
             </div>
