@@ -36,7 +36,7 @@ function Home() {
                 <div className="card-body p-4">
                     <h5 className="card-title fw-bold">Administrador</h5>
                     <p className="card-text text-muted">Acceso exclusivo para personal autorizado</p>
-                    <button className="btn btn-success">Ingresar</button>
+                    <button className="btn btn-success" onClick={() => navigate('/login')}>Ingresar</button>
                 </div>
                 </div>
             </div>
