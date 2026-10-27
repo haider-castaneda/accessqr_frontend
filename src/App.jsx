@@ -6,6 +6,7 @@ import Confirmacion from './pages/Confirmacion/Confirmacion'
 import RecuperarQR from './pages/RecuperarQR/RecuperarQR'
 import MiQR from './pages/MiQR/MiQR'
 import Login from './pages/Login/Login'
+import PanelAdmin from './pages/PanelAdmin/PanelAdmin'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/recuperar-qr" element={<RecuperarQR />} />
         <Route path="/mi-qr" element={<MiQR />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/panel-admin" element={<PanelAdmin />} />
       </Routes>
     </BrowserRouter>
   )
