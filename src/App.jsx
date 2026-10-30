@@ -7,6 +7,7 @@ import RecuperarQR from './pages/RecuperarQR/RecuperarQR'
 import MiQR from './pages/MiQR/MiQR'
 import Login from './pages/Login/Login'
 import PanelAdmin from './pages/PanelAdmin/PanelAdmin'
+import Lector from './pages/Lector/Lector'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/mi-qr" element={<MiQR />} />
         <Route path="/login" element={<Login />} />
         <Route path="/panel-admin" element={<PanelAdmin />} />
+        <Route path="/lector" element={<Lector />} />
       </Routes>
     </BrowserRouter>
   )

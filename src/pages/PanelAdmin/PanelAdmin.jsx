@@ -26,7 +26,7 @@ function PanelAdmin() {
                                     <button className={`btn w-100 text-start ${seccion === 'reportes' ? 'btn-light' : 'btn-outline-light'}`} onClick={() => setSeccion('reportes')}>Reportes</button>
                                 </li>
                                 <li className="nav-item mt-4">
-                                    <button className="btn btn-outline-light w-100 text-start">Salir</button>
+                                    <button className="btn btn-outline-light w-100 text-start" onClick={() => window.location.href = '/lector'}>Pantalla lector</button>
                                 </li>
                             </ul>
                         </div>
