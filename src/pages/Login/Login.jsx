@@ -15,9 +15,15 @@ function Login() {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+    e.preventDefault()
+    // Temporal: cuando exista Flask, el rol vendrá de la respuesta del servidor
+    const rol = formData.usuario === 'celador' ? 'celador' : 'administrador'
+    if (rol === 'celador') {
+        navigate('/lector')
+    } else {
         navigate('/panel-admin')
     }
+}
 
     return (
         <div>
