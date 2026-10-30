@@ -5,11 +5,10 @@ import Navbar from '../../components/Navbar'
 function RecuperarQR() {
     const navigate = useNavigate()
 
-    const [formData, setFormData] = useState({
-        documento: '',
-        contrasena: '',
-        confirmar_contrasena: ''
-    })
+const [formData, setFormData] = useState({
+    documento: '',
+    contrasena: ''
+})
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -34,12 +33,8 @@ function RecuperarQR() {
                                 <input type="text" className="form-control" name="documento" value={formData.documento} onChange={handleChange} required />
                             </div>
                             <div className="mb-3">
-                                <label className="form-label">Nueva contraseña</label>
+                                <label className="form-label">Contraseña</label>
                                 <input type="password" className="form-control" name="contrasena" value={formData.contrasena} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Confirmar contraseña</label>
-                                <input type="password" className="form-control" name="confirmar_contrasena" value={formData.confirmar_contrasena} onChange={handleChange} required />
                             </div>
                             <button type="submit" className="btn btn-success w-100">Generar nuevo QR</button>
                         </form>
