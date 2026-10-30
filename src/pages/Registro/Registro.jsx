@@ -38,8 +38,9 @@ function Registro() {
                 <label className="form-label">Tipo de documento</label>
                 <select className="form-select" name="tipo_documento" value={formData.tipo_documento} onChange={handleChange} required>
                     <option value="">Seleccionar...</option>
-                    <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
-                    <option value="Tarjeta de identidad">Tarjeta de identidad</option>
+                    <option value="CC">Cédula de ciudadanía</option>
+                    <option value="TI">Tarjeta de identidad</option>
+                    <option value="CE">Cédula de extranjería</option>
                 </select>
                 </div>
                 <div className="col-md-6 mb-3">
