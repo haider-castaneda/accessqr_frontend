@@ -2,13 +2,20 @@ import React, { useState } from 'react'
 import Navbar from '../../components/Navbar'
 
 function Lector() {
-    const [ultimoRegistro, setUltimoRegistro] = useState(null)
+    const [ultimoRegistro] = useState(null)
     const [seccion, setSeccion] = useState('lector')
     const [visitante, setVisitante] = useState({
         nombre: '',
+        tipo_documento: '',
         documento: '',
         motivo_visita: ''
     })
+
+    // Datos de prueba: luego vendrán de Flask
+    const [pendientes, setPendientes] = useState([
+    { id: 1, nombre: 'Carlos Ruiz', documento: '1023456789', tipo: 'Aprendiz', revisado: false },
+    { id: 2, nombre: 'Laura Mora', documento: '1098765432', tipo: 'Instructor', revisado: false }
+])
 
     const handleChangeVisitante = (e) => {
         setVisitante({ ...visitante, [e.target.name]: e.target.value })
@@ -17,9 +24,13 @@ function Lector() {
     const handleSubmitVisitante = (e) => {
         e.preventDefault()
         alert('Visitante registrado correctamente')
-        setVisitante({ nombre: '', documento: '', motivo_visita: '' })
+        setVisitante({ nombre: '', tipo_documento: '', documento: '', motivo_visita: '' })
         setSeccion('lector')
     }
+
+    const marcarRevisado = (id) => {
+    setPendientes(pendientes.map(u => u.id === id ? { ...u, revisado: true } : u))
+}
 
     return (
         <div>
@@ -59,10 +70,44 @@ function Lector() {
                                     Registrar visitante
                                 </button>
                                 <button className="btn btn-outline-secondary w-100" onClick={() => setSeccion('regenerar')}>
-                                    Regenerar QR
+                                    Revisar pendientes ({pendientes.filter(u => !u.revisado).length})
                                 </button>
                             </div>
                         </div>
+                    </div>
+                )}
+                {seccion === 'pendientes' && (
+                    <div>
+                        <button className="btn btn-outline-secondary mb-3" onClick={() => setSeccion('lector')}>← Volver</button>
+                        <h5 className="fw-bold mb-3">Usuarios pendientes de revisión</h5>
+                        <table className="table table-bordered">
+                            <thead className="table-success">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Documento</th>
+                                    <th>Tipo</th>
+                                    <th>Revisión</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {pendientes.map(u => (
+                                    <tr key={u.id}>
+                                        <td>{u.nombre}</td>
+                                        <td>{u.documento}</td>
+                                        <td>{u.tipo}</td>
+                                        <td>
+                                            {u.revisado ? (
+                                                <span className="badge bg-success">Revisado</span>
+                                            ) : (
+                                                <button className="btn btn-sm btn-outline-success" onClick={() => marcarRevisado(u.id)}>
+                                                    Marcar como revisado
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
                 {seccion === 'visitante' && (
@@ -76,9 +121,20 @@ function Lector() {
                                         <label className="form-label">Nombre completo</label>
                                         <input type="text" className="form-control" name="nombre" value={visitante.nombre} onChange={handleChangeVisitante} required />
                                     </div>
-                                    <div className="mb-3">
-                                        <label className="form-label">Número de documento</label>
-                                        <input type="text" className="form-control" name="documento" value={visitante.documento} onChange={handleChangeVisitante} required />
+                                    <div className="row">
+                                        <div className="col-md-6 mb-3">
+                                            <label className="form-label">Tipo de documento</label>
+                                            <select className="form-select" name="tipo_documento" value={visitante.tipo_documento} onChange={handleChangeVisitante} required>
+                                                <option value="">Seleccionar...</option>
+                                                <option value="CC">Cédula de ciudadanía</option>
+                                                <option value="TI">Tarjeta de identidad</option>
+                                                <option value="CE">Cédula de extranjería</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-md-6 mb-3">
+                                            <label className="form-label">Número de documento</label>
+                                            <input type="text" className="form-control" name="documento" value={visitante.documento} onChange={handleChangeVisitante} required />
+                                        </div>
                                     </div>
                                     <div className="mb-3">
                                         <label className="form-label">Motivo de visita</label>
