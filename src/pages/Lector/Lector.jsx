@@ -69,7 +69,7 @@ function Lector() {
                                 <button className="btn btn-outline-success w-100 mb-2" onClick={() => setSeccion('visitante')}>
                                     Registrar visitante
                                 </button>
-                                <button className="btn btn-outline-secondary w-100" onClick={() => setSeccion('regenerar')}>
+                                <button className="btn btn-outline-warning w-100" onClick={() => setSeccion('pendientes')}>
                                     Revisar pendientes ({pendientes.filter(u => !u.revisado).length})
                                 </button>
                             </div>
