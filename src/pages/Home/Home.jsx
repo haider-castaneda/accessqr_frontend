@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import logo from '../../assets/logo.png'
 
 function Home() {
     const navigate = useNavigate()
@@ -52,7 +53,19 @@ function Home() {
         }
 
     return (
-        <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 py-5 px-3">
+        <div
+            className="container-fluid d-flex justify-content-center align-items-center min-vh-100 py-5 px-3"
+            style={{ background: 'linear-gradient(135deg, #dbe7ff 0%, #f5f8ff 100%)' }}
+        >
+            <style>{`
+                .form-control.campo-acceso {
+                    transition: box-shadow 0.2s, background-color 0.2s;
+                }
+                .form-control.campo-acceso:focus {
+                    background-color: #fff !important;
+                    box-shadow: 0 0 0 2px #0d6efd, 0 0 0 5px rgba(13, 110, 253, 0.15);
+                }
+            `}</style>
             {/* Caja blanca con esquinas redondeadas */}
             <div
                 className="position-relative bg-white overflow-hidden shadow"
@@ -82,7 +95,7 @@ function Home() {
 
                         <input
                             type="text"
-                            className="form-control bg-light border-0 py-2 mb-3"
+                            className="form-control bg-light border-0 py-2 campo-acceso mb-3"
                             placeholder="Usuario o identificación"
                             value={usuario}
                             onChange={(e) => setUsuario(e.target.value)}
@@ -91,7 +104,7 @@ function Home() {
 
                         <input
                             type="password"
-                            className="form-control bg-light border-0 py-2 mb-4"
+                            className="form-control bg-light border-0 py-2 campo-acceso mb-4"
                             placeholder="Contraseña"
                             value={contrasena}
                             onChange={(e) => setContrasena(e.target.value)}
@@ -103,7 +116,7 @@ function Home() {
                             className="btn btn-primary w-100 fw-bold py-2"
                             onClick={() => navigate('/panel-admin')}
                         >
-                            INICIAR SESION
+                            INICIAR SESIÓN
                         </button>
 
                         <p className="text-center text-muted small mt-4 mb-2">
@@ -136,7 +149,7 @@ function Home() {
 
                         <input
                             type="text"
-                            className="form-control bg-light border-0 py-2 mb-3"
+                            className="form-control bg-light border-0 py-2 campo-acceso campo-acceso mb-3"
                             placeholder="Usuario o identificación"
                             value={usuarioQR}
                             onChange={(e) => setUsuarioQR(e.target.value)}
@@ -145,7 +158,7 @@ function Home() {
 
                         <input
                             type="password"
-                            className="form-control bg-light border-0 py-2 mb-4"
+                            className="form-control bg-light border-0 py-2 campo-acceso campo-acceso mb-4"
                             placeholder="Contraseña"
                             value={contrasenaQR}
                             onChange={(e) => setContrasenaQR(e.target.value)}
@@ -163,22 +176,43 @@ function Home() {
                 </div>
 
                 {/* Panel de color deslizante */}
+                                {/* Panel de color deslizante */}
                 <div
                     className="position-absolute d-flex flex-column align-items-center justify-content-center text-center text-white p-4"
                     style={{
                         ...zonaPanel,
-                        backgroundColor: '#0d6efd',
+                        background: 'linear-gradient(135deg, #3b8bff 0%, #0d6efd 50%, #0a4fc4 100%)',
                         transition: 'transform 0.6s ease-in-out',
                     }}
                 >
-                    <h2 className="fw-bold mb-3">
+                    {/* 1. Logo */}
+                    <div
+                        className="bg-white rounded-circle d-flex align-items-center justify-content-center mb-2"
+                        style={{ width: '90px', height: '90px' }}
+                    >
+                        <img
+                            src={logo}
+                            alt="Logo de AccessQR"
+                            style={{ maxWidth: '70%', maxHeight: '70%' }}
+                        />
+                    </div>
+
+                    {/* 2. Nombre de la empresa */}
+                    <h3 className="fw-bold fs-3 mb-3">AccessQR</h3>
+
+                    {/* Línea que separa la marca del mensaje */}
+                    <hr className="border-light opacity-50 w-25 my-3" />
+
+                    {/* 3. Mensaje secundario */}
+                    <h5 className="fw-semibold mb-2">
                         {esRecuperar ? '¿Ya tienes cuenta?' : '¿Perdiste tu QR?'}
-                    </h2>
-                    <p className="mb-4">
+                    </h5>
+                    <p className="small opacity-75 mb-4">
                         {esRecuperar
                             ? 'Inicia sesión o regístrate'
                             : 'Genera un QR nuevo para ingresar'}
                     </p>
+
                     <button
                         className="btn btn-outline-light px-4 fw-bold"
                         onClick={() => setEsRecuperar(!esRecuperar)}
