@@ -1,8 +1,19 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
-    // false = se ve Iniciar sesión | true = se ve Registro
-    const [esRegistro, setEsRegistro] = useState(false)
+    const navigate = useNavigate()
+
+    // false = se ve Iniciar sesión | true = se ve Recuperar QR
+    const [esRecuperar, setEsRecuperar] = useState(false)
+
+    // Lo que la persona escribe en Iniciar sesión
+    const [usuario, setUsuario] = useState('')
+    const [contrasena, setContrasena] = useState('')
+
+    // Lo que la persona escribe en Recuperar QR
+    const [usuarioQR, setUsuarioQR] = useState('')
+    const [contrasenaQR, setContrasenaQR] = useState('')
 
     // true cuando la pantalla es de celular (menos de 768 px)
     const [esMovil, setEsMovil] = useState(window.innerWidth < 768)
@@ -18,26 +29,26 @@ function Home() {
         ? { top: 0, left: 0, width: '100%', height: '50%' }
         : { top: 0, left: 0, width: '50%', height: '100%' }
 
-    // Zona de Registro: derecha en PC, abajo en celular
-    const zonaRegistro = esMovil
+    // Zona de Recuperar QR: derecha en PC, abajo en celular
+    const zonaRecuperar = esMovil
         ? { bottom: 0, left: 0, width: '100%', height: '50%' }
         : { top: 0, right: 0, width: '50%', height: '100%' }
 
-    // Panel rojo: se mueve de lado en PC y de arriba a abajo en celular
+    // Panel de color: se mueve de lado en PC y de arriba a abajo en celular
     const zonaPanel = esMovil
         ? {
             top: '50%',
             left: 0,
             width: '100%',
             height: '50%',
-            transform: esRegistro ? 'translateY(-100%)' : 'translateY(0)',
+            transform: esRecuperar ? 'translateY(-100%)' : 'translateY(0)',
         }
         : {
             top: 0,
             left: '50%',
             width: '50%',
             height: '100%',
-            transform: esRegistro ? 'translateX(-100%)' : 'translateX(0)',
+            transform: esRecuperar ? 'translateX(-100%)' : 'translateX(0)',
         }
 
     return (
@@ -52,23 +63,106 @@ function Home() {
                     borderRadius: '30px',
                 }}
             >
-                {/* Zona de Iniciar sesión */}
+                {/* Zona de Iniciar sesión + Registrarse */}
                 <div
                     className="position-absolute d-flex align-items-center justify-content-center"
                     style={zonaLogin}
                 >
-                    <p>Aquí irá Iniciar sesión</p>
+                    <form
+                        className="w-100 px-4"
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            console.log('Iniciar sesión con:', usuario)
+                        }}
+                    >
+                        <h2 className="fw-bold text-center text-black mb-2">Iniciar sesión</h2>
+                        <p className="text-center text-muted small mb-4">
+                            Acceso exclusivo para administradores
+                        </p>
+
+                        <input
+                            type="text"
+                            className="form-control bg-light border-0 py-2 mb-3"
+                            placeholder="Usuario o identificación"
+                            value={usuario}
+                            onChange={(e) => setUsuario(e.target.value)}
+                            required
+                        />
+
+                        <input
+                            type="password"
+                            className="form-control bg-light border-0 py-2 mb-4"
+                            placeholder="Contraseña"
+                            value={contrasena}
+                            onChange={(e) => setContrasena(e.target.value)}
+                            required
+                        />  
+
+                        <button
+                            type="button"
+                            className="btn btn-primary w-100 fw-bold py-2"
+                            onClick={() => navigate('/panel-admin')}
+                        >
+                            INICIAR SESION
+                        </button>
+
+                        <p className="text-center text-muted small mt-4 mb-2">
+                            ¿Primera vez aquí?
+                        </p>
+                        <button
+                            type="button"
+                            className="btn btn-outline-primary w-100 fw-bold py-2"
+                            onClick={() => navigate('/registro')}
+                        >
+                            REGISTRARSE
+                        </button>
+                    </form>
                 </div>
 
-                {/* Zona de Registro */}
+                {/* Zona de Recuperar QR: usuario, contraseña y botón CONTINUAR */}
                 <div
                     className="position-absolute d-flex align-items-center justify-content-center"
-                    style={zonaRegistro}
+                    style={zonaRecuperar}
                 >
-                    <p>Aquí irá Registro</p>
+                    <form
+                        className="w-100 px-4"
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                            // Al enviar los datos, recién ahí cambia de pantalla
+                            navigate('/recuperar-qr')
+                        }}
+                    >
+                        <h2 className="fw-bold text-center text-black mb-4">Recuperar QR</h2>
+
+                        <input
+                            type="text"
+                            className="form-control bg-light border-0 py-2 mb-3"
+                            placeholder="Usuario o identificación"
+                            value={usuarioQR}
+                            onChange={(e) => setUsuarioQR(e.target.value)}
+                            required
+                        />
+
+                        <input
+                            type="password"
+                            className="form-control bg-light border-0 py-2 mb-4"
+                            placeholder="Contraseña"
+                            value={contrasenaQR}
+                            onChange={(e) => setContrasenaQR(e.target.value)}
+                            required
+                        />
+
+                        <button
+                            type="button"
+                            className="btn btn-primary w-100 fw-bold py-2"
+                            onClick={() => navigate('/mi-qr')}
+                        >
+                            CONTINUAR
+                        </button>
+                    </form>
                 </div>
 
-                {/* Panel rojo deslizante */}
+                {/* Panel de color deslizante */}
                 <div
                     className="position-absolute d-flex flex-column align-items-center justify-content-center text-center text-white p-4"
                     style={{
@@ -78,18 +172,18 @@ function Home() {
                     }}
                 >
                     <h2 className="fw-bold mb-3">
-                        {esRegistro ? 'Bienvenido' : '¿Primera vez aquí?'}
+                        {esRecuperar ? '¿Ya tienes cuenta?' : '¿Perdiste tu QR?'}
                     </h2>
                     <p className="mb-4">
-                        {esRegistro
-                            ? 'Si ya tienes cuenta, inicia sesión'
-                            : 'Regístrate y obtén tu QR de acceso'}
+                        {esRecuperar
+                            ? 'Inicia sesión o regístrate'
+                            : 'Genera un QR nuevo para ingresar'}
                     </p>
                     <button
                         className="btn btn-outline-light px-4 fw-bold"
-                        onClick={() => setEsRegistro(!esRegistro)}
+                        onClick={() => setEsRecuperar(!esRecuperar)}
                     >
-                        {esRegistro ? 'INICIAR SESIÓN' : 'REGISTRARSE'}
+                        {esRecuperar ? 'ACCEDER' : 'RECUPERAR QR'}
                     </button>
                 </div>
             </div>
