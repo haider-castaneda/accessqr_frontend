@@ -1,30 +1,25 @@
 import React from 'react'
 import Navbar from '../../components/Navbar'
+import { useLocation, Link } from 'react-router-dom'
 
 function Confirmacion() {
-    return (
-        <div>
-        <Navbar />
-        <div className="container mt-5" style={{ maxWidth: '600px' }}>
-            <div className="card text-center shadow-sm">
-            <div className="card-body p-5">
-                <div className="mb-4">
-                <span style={{ fontSize: '60px' }}>⏳</span>
-                </div>
-                <h3 className="fw-bold mb-3">Registro recibido</h3>
-                <p className="text-muted mb-4">
-                Tu solicitud fue enviada correctamente. Un administrador del CBA Mosquera 
-                revisará tus datos y te contactará cuando tu cuenta sea activada.
-                </p>
-                <div className="alert alert-warning">
-                <strong>Cuenta pendiente de aprobación</strong>
-                <p className="mb-0 mt-2">Cuando tu cuenta sea aprobada podrás volver aquí para descargar tu código QR de acceso. Guarda tu número de documento y contraseña.</p>
-                </div>
-            </div>
-            </div>
+  const location = useLocation()
+  const respuesta = location.state?.respuesta
+
+  return (
+    <div>
+      <Navbar />
+      <div className="container mt-5 text-center" style={{ maxWidth: '500px' }}>
+        <div className="card shadow-sm p-4">
+          <h3 className="fw-bold text-success mb-3">¡Solicitud Enviada!</h3>
+          <p className="text-muted">
+            {respuesta?.mensaje || 'Tu registro ha sido recibido y se encuentra pendiente de aprobación por el administrador.'}
+          </p>
+          <Link to="/" className="btn btn-primary w-100 mt-3">Volver al inicio</Link>
         </div>
-        </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default Confirmacion

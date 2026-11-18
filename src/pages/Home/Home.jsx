@@ -65,7 +65,7 @@ function Home() {
         setErrorQR('')
         setCargandoQR(true)
         try {
-            const data = await peticionApi('/login', {
+            const data = await peticionApi('/Recuperar-QR', {
                 method: 'POST',
                 body: JSON.stringify({
                     usuario: usuarioQR,
