@@ -5,14 +5,13 @@ import Registro from './pages/Registro/Registro'
 import Confirmacion from './pages/Confirmacion/Confirmacion'
 import RecuperarQR from './pages/RecuperarQR/RecuperarQR'
 import MiQR from './pages/MiQR/MiQR'
-import Login from './pages/Login/Login'
 import PanelAdmin from './pages/PanelAdmin/PanelAdmin'
 import Lector from './pages/Lector/Lector'
 
 function RutaProtegida({ children, rolesPermitidos }) {
   const token = localStorage.getItem('token')
   const rol = localStorage.getItem('rol')
-  if (!token) return <Navigate to="/login" replace />
+  if (!token) return <Navigate to="/" replace />
   if (rolesPermitidos && !rolesPermitidos.includes(rol)) return <Navigate to="/" replace />
   return children
 }
@@ -26,7 +25,7 @@ function App() {
         <Route path="/confirmacion" element={<Confirmacion />} />
         <Route path="/recuperar-qr" element={<RecuperarQR />} />
         <Route path="/mi-qr" element={<MiQR />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="/panel-admin" element={
           <RutaProtegida rolesPermitidos={['administrador']}>
             <PanelAdmin />
@@ -41,4 +40,5 @@ function App() {
     </BrowserRouter>
   )
 }
+
 export default App
