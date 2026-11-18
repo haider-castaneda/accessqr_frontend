@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
+import { peticionApi } from '../../services/api'
 
 function Home() {
     const navigate = useNavigate()
@@ -11,10 +12,14 @@ function Home() {
     // Lo que la persona escribe en Iniciar sesión
     const [usuario, setUsuario] = useState('')
     const [contrasena, setContrasena] = useState('')
+    const [errorLogin, setErrorLogin] = useState('')
+    const [cargandoLogin, setCargandoLogin] = useState(false)
 
     // Lo que la persona escribe en Recuperar QR
     const [usuarioQR, setUsuarioQR] = useState('')
     const [contrasenaQR, setContrasenaQR] = useState('')
+    const [errorQR, setErrorQR] = useState('')
+    const [cargandoQR, setCargandoQR] = useState(false)
 
     // true cuando la pantalla es de celular (menos de 768 px)
     const [esMovil, setEsMovil] = useState(window.innerWidth < 768)
@@ -24,6 +29,61 @@ function Home() {
         window.addEventListener('resize', detectar)
         return () => window.removeEventListener('resize', detectar)
     }, [])
+
+    // Iniciar sesión real (Administradores y Celadores)
+    const handleLogin = async (e) => {
+        e.preventDefault()
+        setErrorLogin('')
+        setCargandoLogin(true)
+        try {
+            const data = await peticionApi('/login', {
+                method: 'POST',
+                body: JSON.stringify({ usuario, contrasena }),
+            })
+
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('rol', data.rol)
+            localStorage.setItem('nombre', data.nombre)
+
+            if (data.rol === 'celador') {
+                navigate('/lector')
+            } else if (data.rol === 'administrador') {
+                navigate('/panel-admin')
+            } else {
+                navigate('/mi-qr')
+            }
+        } catch (err) {
+            setErrorLogin(err.message || 'Usuario o contraseña incorrectos')
+        } finally {
+            setCargandoLogin(false)
+        }
+    }
+
+    // Recuperar / Consultar QR real
+    const handleRecuperarQR = async (e) => {
+        e.preventDefault()
+        setErrorQR('')
+        setCargandoQR(true)
+        try {
+            const data = await peticionApi('/Recuperar-QR', {
+                method: 'POST',
+                body: JSON.stringify({
+                    usuario: usuarioQR,
+                    contrasena: contrasenaQR,
+                }),
+            })
+
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('rol', data.rol)
+            localStorage.setItem('nombre', data.nombre)
+
+            navigate('/mi-qr', { state: { usuarioQR: data } })
+        } catch (err) {
+            setErrorQR(err.message || 'No se pudo validar tu cuenta o tu solicitud sigue pendiente')
+        } finally {
+            setCargandoQR(false)
+        }
+    }
 
     // Zona de Iniciar sesión: izquierda en PC, arriba en celular
     const zonaLogin = esMovil
@@ -83,15 +143,18 @@ function Home() {
                 >
                     <form
                         className="w-100 px-4"
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                            console.log('Iniciar sesión con:', usuario)
-                        }}
+                        onSubmit={handleLogin}
                     >
                         <h2 className="fw-bold text-center text-black mb-2">Iniciar sesión</h2>
                         <p className="text-center text-muted small mb-4">
-                            Acceso exclusivo para administradores
+                            Acceso exclusivo para administradores y portería
                         </p>
+
+                        {errorLogin && (
+                            <div className="alert alert-danger py-2 small text-center">
+                                {errorLogin}
+                            </div>
+                        )}
 
                         <input
                             type="text"
@@ -112,11 +175,11 @@ function Home() {
                         />  
 
                         <button
-                            type="button"
+                            type="submit"
                             className="btn btn-primary w-100 fw-bold py-2"
-                            onClick={() => navigate('/panel-admin')}
+                            disabled={cargandoLogin}
                         >
-                            INICIAR SESIÓN
+                            {cargandoLogin ? 'VALIDANDO...' : 'INICIAR SESIÓN'}
                         </button>
 
                         <p className="text-center text-muted small mt-4 mb-2">
@@ -139,17 +202,19 @@ function Home() {
                 >
                     <form
                         className="w-100 px-4"
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                            // Al enviar los datos, recién ahí cambia de pantalla
-                            navigate('/recuperar-qr')
-                        }}
+                        onSubmit={handleRecuperarQR}
                     >
                         <h2 className="fw-bold text-center text-black mb-4">Recuperar QR</h2>
 
+                        {errorQR && (
+                            <div className="alert alert-danger py-2 small text-center">
+                                {errorQR}
+                            </div>
+                        )}
+
                         <input
                             type="text"
-                            className="form-control bg-light border-0 py-2 campo-acceso campo-acceso mb-3"
+                            className="form-control bg-light border-0 py-2 campo-acceso mb-3"
                             placeholder="Usuario o identificación"
                             value={usuarioQR}
                             onChange={(e) => setUsuarioQR(e.target.value)}
@@ -158,7 +223,7 @@ function Home() {
 
                         <input
                             type="password"
-                            className="form-control bg-light border-0 py-2 campo-acceso campo-acceso mb-4"
+                            className="form-control bg-light border-0 py-2 campo-acceso mb-4"
                             placeholder="Contraseña"
                             value={contrasenaQR}
                             onChange={(e) => setContrasenaQR(e.target.value)}
@@ -166,17 +231,16 @@ function Home() {
                         />
 
                         <button
-                            type="button"
+                            type="submit"
                             className="btn btn-primary w-100 fw-bold py-2"
-                            onClick={() => navigate('/mi-qr')}
+                            disabled={cargandoQR}
                         >
-                            CONTINUAR
+                            {cargandoQR ? 'VALIDANDO...' : 'CONTINUAR'}
                         </button>
                     </form>
                 </div>
 
                 {/* Panel de color deslizante */}
-                                {/* Panel de color deslizante */}
                 <div
                     className="position-absolute d-flex flex-column align-items-center justify-content-center text-center text-white p-4"
                     style={{
@@ -214,6 +278,7 @@ function Home() {
                     </p>
 
                     <button
+                        type="button"
                         className="btn btn-outline-light px-4 fw-bold"
                         onClick={() => setEsRecuperar(!esRecuperar)}
                     >
