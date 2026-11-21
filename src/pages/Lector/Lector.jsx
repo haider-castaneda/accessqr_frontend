@@ -1,63 +1,46 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { Html5QrcodeScanner } from 'html5-qrcode'
+import { useState } from 'react'
 import Navbar from '../../components/Navbar'
-import { peticionApi } from '../../services/api'
-
+import Escaner from './Escaner'
+import Visitantes from './Visitantes'
+import ReponerQR from './ReponerQR'
+import PendientesCelador from './PendientesCelador'
+ 
+const PESTANAS = [
+  { id: 'escaner', texto: 'Escanear' },
+  { id: 'visitantes', texto: 'Visitantes' },
+  { id: 'reponer', texto: 'Reponer QR' },
+  { id: 'pendientes', texto: 'Pendientes' },
+]
+ 
 function Lector() {
-  const [resultado, setResultado] = useState(null)
-  const [error, setError] = useState('')
-  const bloqueadoRef = useRef(false)
-
-  useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
-      'reader',
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      false
-    )
-
-    const onScanSuccess = async (decodedText) => {
-      if (bloqueadoRef.current) return
-      bloqueadoRef.current = true
-      setError('')
-      try {
-        const data = await peticionApi('/lector/escaneo', {
-          method: 'POST',
-          body: JSON.stringify({ token: decodedText.trim() })
-        })
-        setResultado(data)
-      } catch (err) {
-        setError(err.message || 'Código QR inválido o usuario inactivo')
-        setResultado(null)
-      } finally {
-        setTimeout(() => {
-          bloqueadoRef.current = false
-        }, 2500)
-      }
-    }
-
-    scanner.render(onScanSuccess, () => {})
-    return () => {
-      scanner.clear().catch(() => {})
-    }
-  }, [])
-
+  const [activa, setActiva] = useState('escaner')
+ 
   return (
     <div>
       <Navbar />
-      <div className="container mt-4 text-center" style={{ maxWidth: '500px' }}>
-        <h4 className="fw-bold mb-3">Escáner de Portería</h4>
-        <div id="reader" className="border rounded shadow-sm"></div>
-        {error && <div className="alert alert-danger mt-3">{error}</div>}
-        {resultado && (
-          <div className="alert alert-success mt-3 text-start">
-            <strong>Movimiento:</strong> {resultado.tipo_movimiento?.toUpperCase()}{' '}
-            <strong>Usuario:</strong> {resultado.nombre}{' '}
-            <strong>Hora:</strong> {resultado.fecha_hora}
-          </div>
-        )}
+      <div className="container mt-3 mb-5" style={{ maxWidth: '560px' }}>
+        <h5 className="fw-bold mb-3">Portería</h5>
+ 
+        <ul className="nav nav-pills nav-fill mb-4 bg-white rounded shadow-sm p-1">
+          {PESTANAS.map((p) => (
+            <li className="nav-item" key={p.id}>
+              <button
+                className={`nav-link ${activa === p.id ? 'active' : 'text-dark'}`}
+                onClick={() => setActiva(p.id)}
+              >
+                {p.texto}
+              </button>
+            </li>
+          ))}
+        </ul>
+ 
+        {activa === 'escaner' && <Escaner />}
+        {activa === 'visitantes' && <Visitantes />}
+        {activa === 'reponer' && <ReponerQR />}
+        {activa === 'pendientes' && <PendientesCelador />}
       </div>
     </div>
   )
 }
-
+ 
 export default Lector
