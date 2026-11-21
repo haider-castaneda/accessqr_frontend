@@ -1,114 +1,72 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../../components/Navbar'
 import { useLocation, Link } from 'react-router-dom'
-import { peticionApi } from '../../services/api'
-
+import Navbar from '../../components/Navbar'
+ 
 function MiQR() {
   const location = useLocation()
-  const [datosQR, setDatosQR] = useState(location.state?.usuarioQR || null)
-  const [cargando, setCargando] = useState(!location.state?.usuarioQR)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    const cargarDatosQR = async () => {
-      try {
-        const respuesta = await peticionApi('/mi-qr')
-        setDatosQR((prev) => ({ ...(prev || {}), ...respuesta }))
-      } catch (err) {
-        if (!datosQR) setError(err.message || 'No hay sesión o datos de QR activos.')
-      } finally {
-        setCargando(false)
-      }
-    }
-    cargarDatosQR()
-  }, [])
-
-  const descargarQR = () => {
-    const imagenSrc = datosQR?.qr_imagen || datosQR?.qr_base64 || datosQR?.qr_url
-    if (!imagenSrc) return
-    const enlace = document.createElement('a')
-    enlace.href =
-      imagenSrc.startsWith('data:') || imagenSrc.startsWith('http')
-        ? imagenSrc
-        : `data:image/png;base64,${imagenSrc}`
-    enlace.download = `QR_${datosQR?.documento || 'AccessQR'}.png`
-    enlace.click()
+  const datos = location.state?.qr
+ 
+  if (!datos?.qr) {
+    return (
+      <div>
+        <Navbar />
+        <div className="container mt-5 text-center" style={{ maxWidth: '500px' }}>
+          <div className="card shadow-sm p-4">
+            <h5 className="fw-bold mb-3">No hay ningún QR para mostrar</h5>
+            <p className="text-muted">
+              Por seguridad, el código no se guarda en el navegador. Entra con tu
+              documento y tu contraseña para verlo.
+            </p>
+            <Link to="/" className="btn btn-primary mt-2">Ir al inicio</Link>
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  if (cargando)
-    return (
-      <div>
-        <Navbar />
-        <div className="container mt-5 text-center">
-          <p className="text-muted">Cargando tu código QR...</p>
-        </div>
-      </div>
-    )
-
-  if (!datosQR)
-    return (
-      <div>
-        <Navbar />
-        <div className="container mt-5 text-center">
-          <p>{error || 'No hay sesión activa.'}</p>
-          <Link to="/" className="btn btn-primary mt-2">Volver al inicio</Link>
-        </div>
-      </div>
-    )
-
-  const imagenQR = datosQR.qr_imagen || datosQR.qr_base64 || datosQR.qr_url
-
+ 
+  const descargar = () => {
+    const enlace = document.createElement('a')
+    enlace.href = datos.qr
+    enlace.download = `QR_${(datos.nombre || 'AccessQR').replace(/\s+/g, '_')}.png`
+    document.body.appendChild(enlace)
+    enlace.click()
+    enlace.remove()
+  }
+ 
   return (
     <div>
       <Navbar />
-      <div className="container mt-5" style={{ maxWidth: '500px' }}>
+      <div className="container mt-4 mb-5" style={{ maxWidth: '480px' }}>
         <div className="card shadow-sm text-center">
-          <div className="card-body p-5">
-            <span className="badge bg-success mb-3">
-              {datosQR.estado ? `Cuenta ${datosQR.estado}` : 'Cuenta activa'}
-            </span>
-            <h4 className="fw-bold">{datosQR.nombre || 'Usuario AccessQR'}</h4>
-            <p className="text-muted text-capitalize">
-              {datosQR.rol || 'Aprendiz'} CBA Mosquera
-            </p>
-            <div className="border rounded p-4 mb-4" style={{ backgroundColor: '#f8f9fa' }}>
-              {imagenQR ? (
-                <img
-                  src={
-                    imagenQR.startsWith('data:') || imagenQR.startsWith('http')
-                      ? imagenQR
-                      : `data:image/png;base64,${imagenQR}`
-                  }
-                  alt="QR"
-                  className="img-fluid"
-                  style={{ maxWidth: '220px' }}
-                />
-              ) : (
-                <div>
-                  <p className="fw-bold mb-1">Token QR:</p>
-                  <code className="text-break">{datosQR.token_qr || datosQR.codigo_qr}</code>
-                </div>
-              )}
+          <div className="card-body p-4">
+            <h4 className="fw-bold mb-1">{datos.nombre}</h4>
+            <p className="text-muted small mb-4">Tu código de acceso</p>
+ 
+            <div className="border rounded p-3 mb-4 bg-light">
+              <img
+                src={datos.qr}
+                alt="Código QR de acceso"
+                className="img-fluid"
+                style={{ maxWidth: '240px' }}
+              />
             </div>
-            <p className="text-muted small mb-4">
-              Código QR personal e intransferible para ingreso en portería.
-            </p>
-            <button
-              type="button"
-              className="btn btn-success w-100"
-              onClick={descargarQR}
-              disabled={!imagenQR}
-            >
-              Descargar QR
+ 
+            <button className="btn btn-primary w-100 mb-3" onClick={descargar}>
+              Descargar imagen
             </button>
-            <p className="text-muted small mt-3">
-              Documento: {datosQR.documento || datosQR.identificacion}
+ 
+            <p className="text-muted small mb-0">
+              Es personal e intransferible. Guárdalo en tu celular: en portería
+              basta con mostrarlo en la pantalla.
             </p>
           </div>
+        </div>
+ 
+        <div className="text-center mt-3">
+          <Link to="/" className="btn btn-link">Volver al inicio</Link>
         </div>
       </div>
     </div>
   )
 }
-
+ 
 export default MiQR
