@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
-import { peticionApi } from '../../services/api'
+import { enviar } from '../../services/api'
+import { guardarSesion, rutaSegunRol } from '../../services/sesion'
 
 function Home() {
     const navigate = useNavigate()
@@ -20,6 +21,7 @@ function Home() {
     const [contrasenaQR, setContrasenaQR] = useState('')
     const [errorQR, setErrorQR] = useState('')
     const [cargandoQR, setCargandoQR] = useState(false)
+    const [documentoQR, setDocumentoQR] = useState('') 
 
     // true cuando la pantalla es de celular (menos de 768 px)
     const [esMovil, setEsMovil] = useState(window.innerWidth < 768)
@@ -36,54 +38,46 @@ function Home() {
         setErrorLogin('')
         setCargandoLogin(true)
         try {
-            const data = await peticionApi('/login', {
-                method: 'POST',
-                body: JSON.stringify({ usuario, contrasena }),
-            })
-
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('rol', data.rol)
-            localStorage.setItem('nombre', data.nombre)
-
-            if (data.rol === 'celador') {
-                navigate('/lector')
-            } else if (data.rol === 'administrador') {
-                navigate('/panel-admin')
-            } else {
-                navigate('/mi-qr')
-            }
+            const data = await enviar('/login', { usuario, contrasena })
+            guardarSesion(data)
+            navigate(rutaSegunRol(data.rol))
         } catch (err) {
             setErrorLogin(err.message || 'Usuario o contraseña incorrectos')
         } finally {
-            setCargandoLogin(false)
+        setCargandoLogin(false)
         }
     }
 
+
     // Recuperar / Consultar QR real
-    const handleRecuperarQR = async (e) => {
-        e.preventDefault()
+    const pedirQR = async (ruta) => {
         setErrorQR('')
         setCargandoQR(true)
         try {
-            const data = await peticionApi('/Recuperar-QR', {
-                method: 'POST',
-                body: JSON.stringify({
-                    usuario: usuarioQR,
-                    contrasena: contrasenaQR,
-                }),
+            const data = await enviar(ruta, {
+                documento: documentoQR,
+                contrasena: contrasenaQR,
             })
-
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('rol', data.rol)
-            localStorage.setItem('nombre', data.nombre)
-
-            navigate('/mi-qr', { state: { usuarioQR: data } })
+            navigate('/mi-qr', { state: { qr: data } })
         } catch (err) {
-            setErrorQR(err.message || 'No se pudo validar tu cuenta o tu solicitud sigue pendiente')
+            setErrorQR(err.message || 'No se pudo validar tu cuenta')
         } finally {
             setCargandoQR(false)
         }
     }
+ 
+    const verMiQR = (e) => {
+        e.preventDefault()
+        pedirQR('/mi-qr')
+    }
+ 
+    const generarOtro = () => {
+        const seguro = window.confirm(
+            'Se va a generar un QR nuevo y el anterior dejara de servir. ¿Continuar?'
+        )
+        if (seguro) pedirQR('/recuperar-qr')
+    }
+
 
     // Zona de Iniciar sesión: izquierda en PC, arriba en celular
     const zonaLogin = esMovil
@@ -200,42 +194,49 @@ function Home() {
                     className="position-absolute d-flex align-items-center justify-content-center"
                     style={zonaRecuperar}
                 >
-                    <form
-                        className="w-100 px-4"
-                        onSubmit={handleRecuperarQR}
-                    >
-                        <h2 className="fw-bold text-center text-black mb-4">Recuperar QR</h2>
-
+                   <form className="w-100 px-4" onSubmit={verMiQR}>
+                        <h2 className="fw-bold text-center text-black mb-2">Mi código QR</h2>
+                        <p className="text-center text-muted small mb-4">
+                            Para aprendices, instructores, empleados y miembros
+                        </p>
+ 
                         {errorQR && (
-                            <div className="alert alert-danger py-2 small text-center">
-                                {errorQR}
-                            </div>
+                            <div className="alert alert-danger py-2 small text-center">{errorQR}</div>
                         )}
-
+ 
                         <input
-                            type="text"
-                            className="form-control bg-light border-0 py-2 campo-acceso mb-3"
-                            placeholder="Usuario o identificación"
-                            value={usuarioQR}
-                            onChange={(e) => setUsuarioQR(e.target.value)}
-                            required
+                          type="text"
+                          className="form-control bg-light border-0 py-2 campo-acceso mb-3"
+                          placeholder="Número de documento"
+                          value={documentoQR}
+                          onChange={(e) => setDocumentoQR(e.target.value)}
+                          required
                         />
-
+ 
                         <input
-                            type="password"
-                            className="form-control bg-light border-0 py-2 campo-acceso mb-4"
-                            placeholder="Contraseña"
-                            value={contrasenaQR}
-                            onChange={(e) => setContrasenaQR(e.target.value)}
-                            required
+                          type="password"
+                          className="form-control bg-light border-0 py-2 campo-acceso mb-4"
+                          placeholder="Contraseña"
+                          value={contrasenaQR}
+                          onChange={(e) => setContrasenaQR(e.target.value)}
+                          required
                         />
-
+ 
                         <button
-                            type="submit"
-                            className="btn btn-primary w-100 fw-bold py-2"
-                            disabled={cargandoQR}
+                          type="submit"
+                          className="btn btn-primary w-100 fw-bold py-2 mb-2"
+                          disabled={cargandoQR}
                         >
-                            {cargandoQR ? 'VALIDANDO...' : 'CONTINUAR'}
+                          {cargandoQR ? 'VALIDANDO...' : 'VER MI QR'}
+                        </button>
+ 
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary w-100 py-2"
+                          onClick={generarOtro}
+                          disabled={cargandoQR}
+                        >
+                          Perdí mi QR, generar uno nuevo
                         </button>
                     </form>
                 </div>
