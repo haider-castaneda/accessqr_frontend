@@ -6,7 +6,7 @@ import Usuarios from './Usuarios'
 import Historial from './Historial'
 import Reportes from './Reportes'
 import Personal from './Personal'
- 
+
 const SECCIONES = [
   { id: 'resumen', texto: 'Resumen', componente: Resumen },
   { id: 'pendientes', texto: 'Pendientes', componente: Pendientes },
@@ -15,35 +15,46 @@ const SECCIONES = [
   { id: 'reportes', texto: 'Reportes', componente: Reportes },
   { id: 'personal', texto: 'Personal', componente: Personal },
 ]
- 
+
 function PanelAdmin() {
   const [activa, setActiva] = useState('resumen')
-  const Seccion =
-    SECCIONES.find((s) => s.id === activa)?.componente || Resumen
- 
+  const Seccion = SECCIONES.find((s) => s.id === activa)?.componente || Resumen
+
   return (
-    <div>
+    <div className="aq-pagina">
       <Navbar />
-      <div className="container-fluid px-4 mt-4 mb-5">
-        <h4 className="fw-bold mb-3">Panel de administración</h4>
- 
-        <ul className="nav nav-tabs mb-4">
+
+      <main className="aq-contenido">
+        <div className="aq-encabezado-pagina">
+          <h1>Panel de administración</h1>
+          <p>
+            {new Date().toLocaleDateString('es-CO', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </p>
+        </div>
+
+        <div className="aq-pestanas" role="tablist">
           {SECCIONES.map((s) => (
-            <li className="nav-item" key={s.id}>
-              <button
-                className={`nav-link ${activa === s.id ? 'active' : ''}`}
-                onClick={() => setActiva(s.id)}
-              >
-                {s.texto}
-              </button>
-            </li>
+            <button
+              key={s.id}
+              role="tab"
+              aria-selected={activa === s.id}
+              className="aq-pestana"
+              onClick={() => setActiva(s.id)}
+            >
+              {s.texto}
+            </button>
           ))}
-        </ul>
- 
+        </div>
+
         <Seccion />
-      </div>
+      </main>
     </div>
   )
 }
- 
+
 export default PanelAdmin

@@ -1,28 +1,27 @@
 import { useEffect, useState } from 'react'
 import { obtener } from '../../services/api'
-import { fechaHora, soloHora } from '../../services/formato'
+import { fechaHora, soloHora, claseInsignia } from '../../services/formato'
 import Cargando from '../../components/Cargando'
- 
-function Tarjeta({ titulo, valor, color }) {
+import EstadoVacio from '../../components/EstadoVacio'
+import { IcoPersonas, IcoReloj, IcoMovimiento } from '../../components/Iconos'
+
+function Indicador({ cifra, texto, variante, icono }) {
   return (
-    <div className="col-md-4 mb-3">
-      <div className="card shadow-sm text-center h-100">
-        <div className="card-body py-4">
-          <div className={`display-5 fw-bold text-${color}`}>{valor}</div>
-          <div className="text-muted">{titulo}</div>
-        </div>
-      </div>
+    <div className={`aq-indicador ${variante ? 'aq-indicador--' + variante : ''}`}>
+      <span className="aq-indicador__icono">{icono}</span>
+      <div className="aq-indicador__cifra">{cifra}</div>
+      <div className="aq-indicador__texto">{texto}</div>
     </div>
   )
 }
- 
+
 function Resumen() {
   const [indicadores, setIndicadores] = useState(null)
   const [dentro, setDentro] = useState([])
   const [movimientos, setMovimientos] = useState([])
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(true)
- 
+
   const cargar = async () => {
     setCargando(true)
     try {
@@ -41,48 +40,60 @@ function Resumen() {
       setCargando(false)
     }
   }
- 
+
   useEffect(() => {
     cargar()
   }, [])
- 
+
   if (cargando) return <Cargando />
- 
+
   return (
     <div>
-      {error && <div className="alert alert-danger">{error}</div>}
- 
-      <div className="row">
-        <Tarjeta
-          titulo="Personas dentro"
-          valor={indicadores?.personas_dentro ?? 0}
-          color="primary"
+      {error && (
+        <div className="aq-aviso aq-aviso--error">
+          <span className="aq-aviso__punto" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <div className="aq-indicadores">
+        <Indicador
+          cifra={indicadores?.personas_dentro ?? 0}
+          texto="Personas dentro ahora"
+          icono={<IcoPersonas />}
         />
-        <Tarjeta
-          titulo="Solicitudes pendientes"
-          valor={indicadores?.pendientes ?? 0}
-          color="warning"
+        <Indicador
+          cifra={indicadores?.pendientes ?? 0}
+          texto="Solicitudes pendientes"
+          variante="ambar"
+          icono={<IcoReloj />}
         />
-        <Tarjeta
-          titulo="Movimientos de hoy"
-          valor={indicadores?.movimientos_hoy ?? 0}
-          color="success"
+        <Indicador
+          cifra={indicadores?.movimientos_hoy ?? 0}
+          texto="Movimientos de hoy"
+          variante="acento"
+          icono={<IcoMovimiento />}
         />
       </div>
- 
-      <div className="text-end mb-3">
-        <button className="btn btn-sm btn-outline-secondary" onClick={cargar}>
-          Actualizar
-        </button>
-      </div>
- 
-      <div className="row">
-        <div className="col-lg-6 mb-4">
-          <div className="card shadow-sm h-100">
-            <div className="card-body">
-              <h6 className="fw-bold mb-3">Quién está dentro</h6>
-              <div className="table-responsive">
-                <table className="table table-sm align-middle mb-0">
+
+      <div className="aq-rejilla aq-rejilla--2">
+        <section className="aq-tarjeta">
+          <div className="aq-tarjeta__cabecera">
+            <h2 className="aq-tarjeta__titulo">Quién está dentro</h2>
+            <button
+              className="aq-btn aq-btn--contorno aq-btn--pequeno"
+              onClick={cargar}
+            >
+              Actualizar
+            </button>
+          </div>
+
+          <div className="aq-tarjeta__cuerpo">
+            {dentro.length === 0 ? (
+              <EstadoVacio titulo="No hay nadie dentro" />
+            ) : (
+              <div className="aq-tabla-caja">
+                <table className="aq-tabla">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -91,34 +102,42 @@ function Resumen() {
                     </tr>
                   </thead>
                   <tbody>
-                    {dentro.length === 0 ? (
-                      <tr>
-                        <td colSpan="3" className="text-center text-muted py-3">
-                          No hay nadie dentro
+                    {dentro.map((p) => (
+                      <tr key={p.id_usuario}>
+                        <td data-etiqueta="Nombre">
+                          <span className="aq-tabla__principal">{p.nombre}</span>
+                          <div className="aq-tabla__secundario">
+                            {p.documento}
+                          </div>
+                        </td>
+                        <td data-etiqueta="Tipo">
+                          <span className={claseInsignia(p.tipo_usuario)}>
+                            {p.tipo_usuario}
+                          </span>
+                        </td>
+                        <td data-etiqueta="Entró" className="aq-tabla__numero">
+                          {soloHora(p.hora_ingreso)}
                         </td>
                       </tr>
-                    ) : (
-                      dentro.map((p) => (
-                        <tr key={p.id_usuario}>
-                          <td>{p.nombre}</td>
-                          <td className="text-capitalize">{p.tipo_usuario}</td>
-                          <td>{soloHora(p.hora_ingreso)}</td>
-                        </tr>
-                      ))
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            )}
           </div>
-        </div>
- 
-        <div className="col-lg-6 mb-4">
-          <div className="card shadow-sm h-100">
-            <div className="card-body">
-              <h6 className="fw-bold mb-3">Últimos movimientos</h6>
-              <div className="table-responsive">
-                <table className="table table-sm align-middle mb-0">
+        </section>
+
+        <section className="aq-tarjeta">
+          <div className="aq-tarjeta__cabecera">
+            <h2 className="aq-tarjeta__titulo">Últimos movimientos</h2>
+          </div>
+
+          <div className="aq-tarjeta__cuerpo">
+            {movimientos.length === 0 ? (
+              <EstadoVacio titulo="Todavía no hay movimientos hoy" />
+            ) : (
+              <div className="aq-tabla-caja">
+                <table className="aq-tabla">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -127,38 +146,30 @@ function Resumen() {
                     </tr>
                   </thead>
                   <tbody>
-                    {movimientos.length === 0 ? (
-                      <tr>
-                        <td colSpan="3" className="text-center text-muted py-3">
-                          Todavía no hay movimientos hoy
+                    {movimientos.map((m) => (
+                      <tr key={m.id_registro}>
+                        <td data-etiqueta="Nombre">
+                          <span className="aq-tabla__principal">{m.nombre}</span>
+                        </td>
+                        <td data-etiqueta="Movimiento">
+                          <span className={claseInsignia(m.tipo_movimiento)}>
+                            {m.tipo_movimiento}
+                          </span>
+                        </td>
+                        <td data-etiqueta="Hora" className="aq-tabla__numero">
+                          {fechaHora(m.fecha_hora)}
                         </td>
                       </tr>
-                    ) : (
-                      movimientos.map((m) => (
-                        <tr key={m.id_registro}>
-                          <td>{m.nombre}</td>
-                          <td>
-                            <span
-                              className={`badge bg-${
-                                m.tipo_movimiento === 'entrada' ? 'success' : 'secondary'
-                              }`}
-                            >
-                              {m.tipo_movimiento}
-                            </span>
-                          </td>
-                          <td>{fechaHora(m.fecha_hora)}</td>
-                        </tr>
-                      ))
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            )}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )
 }
- 
+
 export default Resumen

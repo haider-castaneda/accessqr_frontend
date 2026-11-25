@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react'
 import { obtener, enviar } from '../../services/api'
-import { fechaHora } from '../../services/formato'
+import { fechaHora, claseInsignia } from '../../services/formato'
 import Cargando from '../../components/Cargando'
- 
+import EstadoVacio from '../../components/EstadoVacio'
+
 const VACIO = {
   usuario_login: '',
   nombre: '',
   rol: 'celador',
   contrasena: '',
 }
- 
+
 function Personal() {
   const [lista, setLista] = useState([])
   const [nuevo, setNuevo] = useState(VACIO)
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
   const [cargando, setCargando] = useState(true)
- 
+
   const cargar = async () => {
     setCargando(true)
     try {
@@ -28,11 +29,11 @@ function Personal() {
       setCargando(false)
     }
   }
- 
+
   useEffect(() => {
     cargar()
   }, [])
- 
+
   const crear = async (e) => {
     e.preventDefault()
     setError('')
@@ -46,7 +47,7 @@ function Personal() {
       setError(err.message)
     }
   }
- 
+
   const cambiarEstado = async (id, estado) => {
     setError('')
     try {
@@ -56,21 +57,38 @@ function Personal() {
       setError(err.message)
     }
   }
- 
+
   return (
-    <div className="row">
-      <div className="col-lg-7 mb-4">
-        <div className="card shadow-sm h-100">
-          <div className="card-body">
-            <h6 className="fw-bold mb-3">Cuentas del personal</h6>
- 
-            {error && <div className="alert alert-danger py-2">{error}</div>}
- 
+    <div>
+      {error && (
+        <div className="aq-aviso aq-aviso--error">
+          <span className="aq-aviso__punto" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {aviso && (
+        <div className="aq-aviso aq-aviso--ok">
+          <span className="aq-aviso__punto" />
+          <span>{aviso}</span>
+        </div>
+      )}
+
+      <div className="aq-rejilla aq-rejilla--ancha-estrecha">
+
+        <section className="aq-tarjeta">
+          <div className="aq-tarjeta__cabecera">
+            <h2 className="aq-tarjeta__titulo">Cuentas del personal</h2>
+          </div>
+
+          <div className="aq-tarjeta__cuerpo">
             {cargando ? (
               <Cargando />
+            ) : lista.length === 0 ? (
+              <EstadoVacio titulo="No hay cuentas de personal" />
             ) : (
-              <div className="table-responsive">
-                <table className="table align-middle">
+              <div className="aq-tabla-caja">
+                <table className="aq-tabla">
                   <thead>
                     <tr>
                       <th>Nombre</th>
@@ -78,41 +96,56 @@ function Personal() {
                       <th>Rol</th>
                       <th>Estado</th>
                       <th>Creada</th>
-                      <th></th>
+                      <th>Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
                     {lista.map((p) => (
                       <tr key={p.id_admin}>
-                        <td>{p.nombre}</td>
-                        <td>{p.usuario_login}</td>
-                        <td className="text-capitalize">{p.rol}</td>
-                        <td>
-                          <span
-                            className={`badge bg-${
-                              p.estado === 'activo' ? 'success' : 'secondary'
-                            }`}
-                          >
+                        <td data-etiqueta="Nombre">
+                          <span className="aq-tabla__principal">{p.nombre}</span>
+                        </td>
+
+                        <td data-etiqueta="Usuario" className="aq-tabla__numero">
+                          {p.usuario_login}
+                        </td>
+
+                        <td data-etiqueta="Rol">
+                          <span className="aq-insignia aq-insignia--info">
+                            {p.rol}
+                          </span>
+                        </td>
+
+                        <td data-etiqueta="Estado">
+                          <span className={claseInsignia(p.estado)}>
                             {p.estado}
                           </span>
                         </td>
-                        <td>{fechaHora(p.fecha_creacion)}</td>
-                        <td>
-                          {p.estado === 'activo' ? (
-                            <button
-                              className="btn btn-sm btn-outline-secondary"
-                              onClick={() => cambiarEstado(p.id_admin, 'inactivo')}
-                            >
-                              Desactivar
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-sm btn-outline-success"
-                              onClick={() => cambiarEstado(p.id_admin, 'activo')}
-                            >
-                              Activar
-                            </button>
-                          )}
+
+                        <td data-etiqueta="Creada">
+                          {fechaHora(p.fecha_creacion)}
+                        </td>
+
+                        <td data-etiqueta="Acciones">
+                          <div className="aq-acciones">
+                            {p.estado === 'activo' ? (
+                              <button
+                                className="aq-btn aq-btn--contorno aq-btn--pequeno"
+                                onClick={() =>
+                                  cambiarEstado(p.id_admin, 'inactivo')
+                                }
+                              >
+                                Desactivar
+                              </button>
+                            ) : (
+                              <button
+                                className="aq-btn aq-btn--acento aq-btn--pequeno"
+                                onClick={() => cambiarEstado(p.id_admin, 'activo')}
+                              >
+                                Activar
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -121,75 +154,74 @@ function Personal() {
               </div>
             )}
           </div>
-        </div>
-      </div>
- 
-      <div className="col-lg-5 mb-4">
-        <div className="card shadow-sm h-100">
-          <div className="card-body">
-            <h6 className="fw-bold mb-3">Crear cuenta nueva</h6>
- 
-            {aviso && <div className="alert alert-success py-2">{aviso}</div>}
- 
-            <form onSubmit={crear}>
-              <div className="mb-3">
-                <label className="form-label">Nombre completo</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={nuevo.nombre}
-                  onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })}
-                  required
-                />
-              </div>
- 
-              <div className="mb-3">
-                <label className="form-label">Documento (será su usuario)</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={nuevo.usuario_login}
-                  onChange={(e) =>
-                    setNuevo({ ...nuevo, usuario_login: e.target.value })
-                  }
-                  required
-                />
-                <div className="form-text">Solo números, entre 5 y 20 dígitos.</div>
-              </div>
- 
-              <div className="mb-3">
-                <label className="form-label">Rol</label>
-                <select
-                  className="form-select"
-                  value={nuevo.rol}
-                  onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value })}
-                >
-                  <option value="celador">Celador</option>
-                  <option value="administrador">Administrador</option>
-                </select>
-              </div>
- 
-              <div className="mb-3">
-                <label className="form-label">Contraseña</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  value={nuevo.contrasena}
-                  onChange={(e) =>
-                    setNuevo({ ...nuevo, contrasena: e.target.value })
-                  }
-                  required
-                />
-                <div className="form-text">Mínimo 8 caracteres.</div>
-              </div>
- 
-              <button className="btn btn-primary w-100">Crear cuenta</button>
-            </form>
+        </section>
+
+        <section className="aq-tarjeta">
+          <div className="aq-tarjeta__cabecera">
+            <h2 className="aq-tarjeta__titulo">Crear cuenta nueva</h2>
           </div>
-        </div>
+
+          <form className="aq-tarjeta__cuerpo" onSubmit={crear}>
+            <div className="aq-campo-grupo">
+              <label className="aq-etiqueta">Nombre completo</label>
+              <input
+                type="text"
+                className="aq-campo"
+                value={nuevo.nombre}
+                onChange={(e) => setNuevo({ ...nuevo, nombre: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="aq-campo-grupo">
+              <label className="aq-etiqueta">Documento (será su usuario)</label>
+              <input
+                type="text"
+                className="aq-campo"
+                value={nuevo.usuario_login}
+                onChange={(e) =>
+                  setNuevo({ ...nuevo, usuario_login: e.target.value })
+                }
+                required
+              />
+              <p className="aq-ayuda">Solo números, entre 5 y 20 dígitos.</p>
+            </div>
+
+            <div className="aq-campo-grupo">
+              <label className="aq-etiqueta">Rol</label>
+              <select
+                className="aq-campo"
+                value={nuevo.rol}
+                onChange={(e) => setNuevo({ ...nuevo, rol: e.target.value })}
+              >
+                <option value="celador">Celador</option>
+                <option value="administrador">Administrador</option>
+              </select>
+            </div>
+
+            <div className="aq-campo-grupo">
+              <label className="aq-etiqueta">Contraseña</label>
+              <input
+                type="password"
+                className="aq-campo"
+                value={nuevo.contrasena}
+                onChange={(e) =>
+                  setNuevo({ ...nuevo, contrasena: e.target.value })
+                }
+                required
+              />
+              <p className="aq-ayuda">Mínimo 8 caracteres.</p>
+            </div>
+
+            <button className="aq-btn aq-btn--primario aq-btn--bloque">
+              Crear cuenta
+            </button>
+          </form>
+        </section>
+
       </div>
     </div>
   )
 }
- 
+
 export default Personal
