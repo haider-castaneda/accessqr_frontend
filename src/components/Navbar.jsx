@@ -1,9 +1,15 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cerrarSesion, hayToken, nombreActual, rolActual } from '../services/sesion'
+ 
+// Las unicas pantallas donde tiene sentido mostrar la sesion.
+const RUTAS_PRIVADAS = ['/panel-admin', '/lector']
  
 function Navbar() {
   const navigate = useNavigate()
-  const conSesion = hayToken()
+  const { pathname } = useLocation()
+ 
+  // No basta con que haya token: ademas hay que estar en zona privada.
+  const mostrarSesion = RUTAS_PRIVADAS.includes(pathname) && hayToken()
  
   const salir = () => {
     cerrarSesion()
@@ -11,29 +17,35 @@ function Navbar() {
   }
  
   return (
-    <nav className="navbar navbar-dark" style={{ backgroundColor: '#0d6efd' }}>
-      <div className="container">
-        <Link to="/" className="navbar-brand fw-bold">
+    <header className="aq-barra">
+      <div className="aq-barra__interior">
+        <Link to="/" className="aq-marca">
+          <span className="aq-marca__icono">
+            <i /><i /><i /><i />
+          </span>
           AccessQR
         </Link>
  
-        {conSesion ? (
-          <div className="d-flex align-items-center gap-3">
-            <span className="text-white small d-none d-sm-inline">
-              {nombreActual()}
-              {' · '}
-              <span className="text-capitalize">{rolActual()}</span>
+        {mostrarSesion ? (
+          <div className="aq-sesion">
+            <span className="aq-sesion__quien">
+              <span className="aq-sesion__nombre">{nombreActual()}</span>
+              <span className="aq-sesion__rol">{rolActual()}</span>
             </span>
-            <button className="btn btn-sm btn-outline-light" onClick={salir}>
+            <button
+              className="aq-btn aq-btn--claro aq-btn--pequeno"
+              onClick={salir}
+            >
               Cerrar sesión
             </button>
           </div>
         ) : (
-          <span className="text-white small">Control de acceso</span>
+          <span className="aq-barra__lema">Control de acceso</span>
         )}
       </div>
-    </nav>
+    </header>
   )
 }
  
 export default Navbar
+

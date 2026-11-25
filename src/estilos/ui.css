@@ -1,0 +1,999 @@
+/* ============================================================
+   AccessQR · Componentes de interfaz
+   Todas las clases llevan el prefijo aq- para no chocar nunca
+   con Bootstrap, que se sigue usando para la rejilla.
+   ============================================================ */
+
+/* ---------- 1. Estructura de pagina ---------- */
+
+.aq-pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.aq-contenido {
+  flex: 1;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 20px 60px;
+}
+
+.aq-contenido--estrecho { max-width: 560px; }
+.aq-contenido--medio { max-width: 860px; }
+
+.aq-encabezado-pagina { margin-bottom: 22px; }
+
+.aq-encabezado-pagina h1 {
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.aq-encabezado-pagina p {
+  margin: 4px 0 0;
+  color: var(--aq-texto-suave);
+  font-size: 14px;
+}
+
+/* ---------- 2. Barra superior ---------- */
+
+.aq-barra {
+  background: var(--aq-tinta);
+  background-image:
+    radial-gradient(circle at 12% -40%, rgba(59, 79, 216, .55), transparent 55%),
+    radial-gradient(circle at 92% 140%, rgba(16, 181, 165, .35), transparent 55%);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .06), var(--aq-sombra-1);
+}
+
+.aq-barra__interior {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.aq-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-family: var(--aq-fuente-titulo);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.aq-marca:hover { color: #fff; text-decoration: none; }
+
+/* El isotipo: cuatro modulos como los de un QR */
+.aq-marca__icono {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5px;
+  padding: 6px;
+  flex: none;
+}
+
+.aq-marca__icono i {
+  display: block;
+  border-radius: 2px;
+  background: var(--aq-primario);
+}
+
+.aq-marca__icono i:nth-child(4) { background: var(--aq-acento); }
+
+.aq-barra__lema {
+  font-size: 13px;
+  color: rgba(255, 255, 255, .72);
+}
+
+.aq-sesion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aq-sesion__quien {
+  text-align: right;
+  line-height: 1.25;
+}
+
+.aq-sesion__nombre {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.aq-sesion__rol {
+  display: block;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: rgba(255, 255, 255, .62);
+}
+
+@media (max-width: 520px) {
+  .aq-sesion__quien { display: none; }
+  .aq-barra__lema { display: none; }
+}
+
+/* ---------- 3. Tarjetas ---------- */
+
+.aq-tarjeta {
+  background: var(--aq-superficie);
+  border: 1px solid var(--aq-borde);
+  border-radius: var(--aq-radio-grande);
+  box-shadow: var(--aq-sombra-1);
+}
+
+.aq-tarjeta__cuerpo { padding: 22px; }
+.aq-tarjeta__cuerpo--amplio { padding: 30px; }
+
+.aq-tarjeta__cabecera {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--aq-borde);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.aq-tarjeta__titulo {
+  font-family: var(--aq-fuente-titulo);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+@media (max-width: 576px) {
+  .aq-tarjeta__cuerpo { padding: 18px; }
+  .aq-tarjeta__cabecera { padding: 14px 18px; }
+}
+
+/* ---------- 4. Botones ---------- */
+
+.aq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--aq-fuente);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 11px 18px;
+  border-radius: var(--aq-radio);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--aq-transicion),
+              box-shadow var(--aq-transicion),
+              background-color var(--aq-transicion);
+  text-decoration: none;
+}
+
+.aq-btn:hover { text-decoration: none; }
+.aq-btn:active { transform: translateY(1px); }
+
+.aq-btn:disabled,
+.aq-btn[disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.aq-btn--primario {
+  background: var(--aq-primario);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(59, 79, 216, .28);
+}
+
+.aq-btn--primario:hover:not(:disabled) {
+  background: var(--aq-primario-oscuro);
+  color: #fff;
+}
+
+.aq-btn--acento {
+  background: var(--aq-acento);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(16, 181, 165, .28);
+}
+
+.aq-btn--acento:hover:not(:disabled) { filter: brightness(.94); color: #fff; }
+
+.aq-btn--contorno {
+  background: var(--aq-superficie);
+  border-color: var(--aq-borde-fuerte);
+  color: var(--aq-texto);
+}
+
+.aq-btn--contorno:hover:not(:disabled) {
+  border-color: var(--aq-primario);
+  color: var(--aq-primario);
+}
+
+.aq-btn--peligro {
+  background: var(--aq-rojo-claro);
+  color: #A3282D;
+  border-color: #F3CCCE;
+}
+
+.aq-btn--peligro:hover:not(:disabled) { background: #F8D7D9; color: #A3282D; }
+
+.aq-btn--claro {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  border-color: rgba(255, 255, 255, .28);
+  backdrop-filter: blur(4px);
+}
+
+.aq-btn--claro:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .24);
+  color: #fff;
+}
+
+.aq-btn--bloque { width: 100%; }
+
+.aq-btn--pequeno {
+  padding: 7px 13px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+/* ---------- 5. Formularios ---------- */
+
+.aq-campo-grupo { margin-bottom: 16px; }
+
+.aq-etiqueta {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--aq-texto);
+  margin-bottom: 6px;
+}
+
+.aq-campo {
+  width: 100%;
+  font-family: var(--aq-fuente);
+  font-size: 15px;
+  color: var(--aq-texto);
+  background: #FBFCFE;
+  border: 1.5px solid var(--aq-borde);
+  border-radius: var(--aq-radio);
+  padding: 11px 14px;
+  transition: border-color var(--aq-transicion),
+              box-shadow var(--aq-transicion),
+              background-color var(--aq-transicion);
+}
+
+.aq-campo::placeholder { color: #A3ABC2; }
+
+.aq-campo:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--aq-primario);
+  box-shadow: 0 0 0 4px rgba(59, 79, 216, .13);
+}
+
+select.aq-campo {
+  appearance: none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%2369748F' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.aq-ayuda {
+  font-size: 12.5px;
+  color: var(--aq-texto-suave);
+  margin: 6px 0 0;
+}
+
+/* ---------- 6. Avisos ---------- */
+
+.aq-aviso {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-radius: var(--aq-radio);
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid transparent;
+  margin-bottom: 16px;
+}
+
+.aq-aviso__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex: none;
+}
+
+.aq-aviso--error {
+  background: var(--aq-rojo-claro);
+  border-color: #F3CCCE;
+  color: #90262B;
+}
+.aq-aviso--error .aq-aviso__punto { background: var(--aq-rojo); }
+
+.aq-aviso--ok {
+  background: var(--aq-acento-claro);
+  border-color: #BFE9E4;
+  color: #0B6F65;
+}
+.aq-aviso--ok .aq-aviso__punto { background: var(--aq-acento); }
+
+.aq-aviso--info {
+  background: var(--aq-primario-claro);
+  border-color: #D2D7F7;
+  color: #2A3690;
+}
+.aq-aviso--info .aq-aviso__punto { background: var(--aq-primario); }
+
+/* ---------- 7. Insignias ---------- */
+
+.aq-insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  padding: 4px 10px;
+  border-radius: var(--aq-radio-pildora);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.aq-insignia::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.aq-insignia--ok      { background: var(--aq-acento-claro);   color: #0B6F65; }
+.aq-insignia--espera  { background: var(--aq-ambar-claro);    color: #90591A; }
+.aq-insignia--alto    { background: var(--aq-rojo-claro);     color: #A3282D; }
+.aq-insignia--apagado { background: #EEF0F6;                  color: #5C6680; }
+.aq-insignia--info    { background: var(--aq-primario-claro); color: #2A3690; }
+
+/* ---------- 8. Indicadores del panel ---------- */
+
+.aq-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.aq-indicador {
+  position: relative;
+  background: var(--aq-superficie);
+  border: 1px solid var(--aq-borde);
+  border-radius: var(--aq-radio-grande);
+  box-shadow: var(--aq-sombra-1);
+  padding: 20px 22px;
+  overflow: hidden;
+}
+
+/* Franja de color que identifica cada indicador de un vistazo */
+.aq-indicador::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--aq-primario);
+}
+
+.aq-indicador--acento::before { background: var(--aq-acento); }
+.aq-indicador--ambar::before  { background: var(--aq-ambar); }
+
+.aq-indicador__cifra {
+  font-family: var(--aq-fuente-titulo);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--aq-tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.aq-indicador__texto {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--aq-texto-suave);
+}
+
+.aq-indicador__icono {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--aq-primario-claro);
+  color: var(--aq-primario);
+}
+
+.aq-indicador--acento .aq-indicador__icono {
+  background: var(--aq-acento-claro); color: #0B6F65;
+}
+.aq-indicador--ambar .aq-indicador__icono {
+  background: var(--aq-ambar-claro); color: #90591A;
+}
+
+/* ---------- 9. Pestanas ---------- */
+
+.aq-pestanas {
+  display: flex;
+  gap: 4px;
+  background: #EDEFF7;
+  padding: 5px;
+  border-radius: var(--aq-radio-pildora);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.aq-pestanas::-webkit-scrollbar { display: none; }
+
+.aq-pestana {
+  flex: 1 0 auto;
+  border: 0;
+  background: transparent;
+  font-family: var(--aq-fuente);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--aq-texto-suave);
+  padding: 9px 16px;
+  border-radius: var(--aq-radio-pildora);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--aq-transicion), color var(--aq-transicion);
+}
+
+.aq-pestana:hover { color: var(--aq-texto); }
+
+.aq-pestana[aria-selected='true'] {
+  background: var(--aq-superficie);
+  color: var(--aq-primario);
+  box-shadow: var(--aq-sombra-1);
+}
+
+/* En pantallas chicas se aprietan para que quepan las cuatro del
+   lector; las seis del panel siguen desplazandose de lado. */
+@media (max-width: 560px) {
+  .aq-pestanas { margin-bottom: 18px; padding: 4px; }
+  .aq-pestana { padding: 8px 11px; font-size: 12.5px; }
+}
+
+/* ---------- 10. Tablas ---------- */
+
+.aq-tabla-caja { overflow-x: auto; }
+
+.aq-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.aq-tabla th {
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--aq-texto-suave);
+  padding: 0 14px 10px;
+  border-bottom: 1px solid var(--aq-borde);
+  white-space: nowrap;
+}
+
+.aq-tabla td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #F0F2F8;
+  vertical-align: middle;
+}
+
+.aq-tabla tbody tr:last-child td { border-bottom: 0; }
+
+.aq-tabla tbody tr {
+  transition: background-color var(--aq-transicion);
+}
+
+.aq-tabla tbody tr:hover { background: #FAFBFE; }
+
+.aq-tabla__principal { font-weight: 600; color: var(--aq-tinta); }
+.aq-tabla__secundario { font-size: 12.5px; color: var(--aq-texto-suave); }
+.aq-tabla__numero { font-variant-numeric: tabular-nums; }
+
+.aq-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* En el celular, cada fila se vuelve una ficha legible.
+   Requiere data-etiqueta="..." en cada <td>. */
+@media (max-width: 767.98px) {
+  .aq-tabla thead { display: none; }
+
+  .aq-tabla, .aq-tabla tbody, .aq-tabla tr, .aq-tabla td { display: block; }
+
+  .aq-tabla tr {
+    border: 1px solid var(--aq-borde);
+    border-radius: var(--aq-radio);
+    padding: 6px 12px;
+    margin-bottom: 12px;
+    background: var(--aq-superficie);
+  }
+
+  .aq-tabla tr:hover { background: var(--aq-superficie); }
+
+  /* Rejilla de dos columnas: la etiqueta a la izquierda y todo el
+     contenido de la celda apilado a la derecha, aunque sean varias
+     lineas (nombre + documento, por ejemplo). */
+  .aq-tabla td {
+    display: grid;
+    grid-template-columns: minmax(72px, auto) 1fr;
+    column-gap: 14px;
+    row-gap: 2px;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px dashed #EDEFF6;
+    text-align: right;
+  }
+
+  .aq-tabla tr td:last-child { border-bottom: 0; }
+
+  .aq-tabla td::before {
+    content: attr(data-etiqueta);
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--aq-texto-suave);
+    text-align: left;
+  }
+
+  .aq-tabla td > * { grid-column: 2; justify-self: end; }
+
+  .aq-acciones { justify-content: flex-end; }
+}
+
+/* ---------- 11. Estado vacio ---------- */
+
+.aq-vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: var(--aq-texto-suave);
+}
+
+.aq-vacio__marco {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 14px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: var(--aq-primario-claro);
+  color: var(--aq-primario);
+}
+
+.aq-vacio__titulo {
+  font-family: var(--aq-fuente-titulo);
+  font-weight: 600;
+  color: var(--aq-texto);
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.aq-vacio p { margin: 0; font-size: 13.5px; }
+
+/* ---------- 12. Cargando ---------- */
+
+.aq-cargando { text-align: center; padding: 56px 20px; }
+
+.aq-cargando__aro {
+  width: 34px;
+  height: 34px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  border: 3px solid var(--aq-borde);
+  border-top-color: var(--aq-primario);
+  animation: aq-girar .8s linear infinite;
+}
+
+.aq-cargando p { margin: 0; color: var(--aq-texto-suave); font-size: 14px; }
+
+@keyframes aq-girar { to { transform: rotate(360deg); } }
+
+/* ---------- 13. Marco de visor QR (motivo de marca) ---------- */
+
+.aq-marco {
+  position: relative;
+  border-radius: var(--aq-radio-grande);
+  overflow: hidden;
+}
+
+.aq-marco::before,
+.aq-marco::after,
+.aq-marco > .aq-marco__esq {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--aq-primario);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.aq-marco::before {
+  top: 10px; left: 10px;
+  border-right: 0; border-bottom: 0;
+  border-top-left-radius: 10px;
+}
+
+.aq-marco::after {
+  bottom: 10px; right: 10px;
+  border-left: 0; border-top: 0;
+  border-bottom-right-radius: 10px;
+}
+
+/* ---------- 14. Sello de movimiento (resultado del escaneo) ---------- */
+
+.aq-sello {
+  position: relative;
+  border-radius: var(--aq-radio-grande);
+  padding: 26px 22px;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+  animation: aq-sello-entra 320ms cubic-bezier(.2, .9, .3, 1.2);
+}
+
+.aq-sello::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1.6px);
+  background-size: 18px 18px;
+  pointer-events: none;
+}
+
+.aq-sello--entrada { background: linear-gradient(135deg, #10B5A5, #0B7F74); }
+.aq-sello--salida  { background: linear-gradient(135deg, #E5922A, #B86F12); }
+
+.aq-sello__tipo {
+  font-family: var(--aq-fuente-titulo);
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.aq-sello__nombre { font-size: 19px; font-weight: 600; }
+
+.aq-sello__datos {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, .85);
+  margin-top: 2px;
+}
+
+.aq-sello__hora {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 5px 14px;
+  border-radius: var(--aq-radio-pildora);
+  background: rgba(255, 255, 255, .18);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes aq-sello-entra {
+  from { opacity: 0; transform: scale(.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ---------- 15. Credencial del QR ---------- */
+
+.aq-credencial {
+  position: relative;
+  background: var(--aq-superficie);
+  border-radius: 26px;
+  box-shadow: var(--aq-sombra-3);
+  overflow: hidden;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.aq-credencial__tapa {
+  background: var(--aq-tinta);
+  background-image:
+    radial-gradient(circle at 15% -30%, rgba(59, 79, 216, .75), transparent 60%),
+    radial-gradient(circle at 90% 130%, rgba(16, 181, 165, .5), transparent 60%);
+  color: #fff;
+  padding: 24px 26px 30px;
+  text-align: center;
+}
+
+.aq-credencial__nombre {
+  font-family: var(--aq-fuente-titulo);
+  font-size: 21px;
+  font-weight: 600;
+  color: #fff;
+  margin: 10px 0 2px;
+}
+
+.aq-credencial__rol {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: rgba(255, 255, 255, .7);
+}
+
+/* La muesca: el corte de ticket entre la tapa y el QR */
+.aq-credencial__muesca {
+  position: relative;
+  height: 24px;
+  background: var(--aq-superficie);
+}
+
+.aq-credencial__muesca::before,
+.aq-credencial__muesca::after {
+  content: '';
+  position: absolute;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--aq-fondo);
+  box-shadow: inset 0 -1px 0 var(--aq-borde);
+}
+
+.aq-credencial__muesca::before { left: -14px; }
+.aq-credencial__muesca::after { right: -14px; }
+
+.aq-credencial__linea {
+  position: absolute;
+  top: -1px;
+  left: 20px;
+  right: 20px;
+  border-top: 2px dashed var(--aq-borde-fuerte);
+}
+
+.aq-credencial__qr {
+  padding: 4px 26px 26px;
+  text-align: center;
+}
+
+.aq-credencial__qr img {
+  width: 100%;
+  max-width: 230px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.aq-credencial__pie {
+  padding: 0 26px 26px;
+  text-align: center;
+}
+
+.aq-credencial__nota {
+  font-size: 12.5px;
+  color: var(--aq-texto-suave);
+  margin: 14px 0 0;
+}
+
+/* ---------- 16. Portada partida (pantalla de inicio) ---------- */
+
+.aq-portada {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 26px 18px;
+  background:
+    radial-gradient(1100px 520px at 8% -10%, #E7EAFB, transparent 60%),
+    radial-gradient(900px 520px at 100% 110%, #DEF4F1, transparent 60%),
+    var(--aq-fondo);
+}
+
+.aq-portada__caja {
+  position: relative;
+  width: 100%;
+  max-width: 1020px;
+  min-height: 600px;
+  background: var(--aq-superficie);
+  border-radius: 30px;
+  box-shadow: var(--aq-sombra-3);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.aq-portada__lado {
+  display: grid;
+  place-items: center;
+  padding: 44px 40px;
+}
+
+.aq-portada__form { width: 100%; max-width: 330px; }
+
+.aq-portada__titulo {
+  font-size: 27px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.aq-portada__sub {
+  text-align: center;
+  color: var(--aq-texto-suave);
+  font-size: 13.5px;
+  margin: 0 0 24px;
+}
+
+/* El panel de color que se desliza de un lado al otro */
+.aq-portada__panel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 44px 38px;
+  color: #fff;
+  background: var(--aq-tinta);
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(59, 79, 216, .85), transparent 58%),
+    radial-gradient(circle at 85% 100%, rgba(16, 181, 165, .6), transparent 58%);
+  transition: transform 620ms cubic-bezier(.65, 0, .35, 1);
+  z-index: 5;
+}
+
+.aq-portada__panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, .13) 1px, transparent 1.6px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.aq-portada__panel--izquierda { transform: translateX(-100%); }
+
+.aq-portada__logo {
+  width: 78px;
+  height: 78px;
+  border-radius: 24px;
+  background: #fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 15px;
+  margin-bottom: 18px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .22);
+}
+
+.aq-portada__logo i { display: block; border-radius: 5px; background: var(--aq-primario); }
+.aq-portada__logo i:nth-child(4) { background: var(--aq-acento); }
+
+.aq-portada__marca {
+  font-family: var(--aq-fuente-titulo);
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.02em;
+}
+
+.aq-portada__regla {
+  width: 46px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .4);
+  margin: 16px 0 18px;
+}
+
+.aq-portada__panel h3 {
+  color: #fff;
+  font-size: 19px;
+  margin-bottom: 6px;
+}
+
+.aq-portada__panel p {
+  color: rgba(255, 255, 255, .78);
+  font-size: 13.5px;
+  margin: 0 0 22px;
+  max-width: 240px;
+}
+
+/* En celular la caja se apila: formularios arriba, panel abajo */
+@media (max-width: 860px) {
+  .aq-portada__caja {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    min-height: 760px;
+  }
+
+  .aq-portada__panel {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    padding: 30px 28px;
+  }
+
+  .aq-portada__panel--izquierda { transform: translateY(-100%); }
+  .aq-portada__logo { width: 62px; height: 62px; border-radius: 19px; padding: 12px; }
+  .aq-portada__marca { font-size: 25px; }
+}
+
+/* ---------- 17. Utilidades ---------- */
+
+.aq-fila-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.aq-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.aq-conteo {
+  font-size: 13px;
+  color: var(--aq-texto-suave);
+  margin: 0 0 12px;
+}
+
+/* Rejillas propias, para no depender de la de Bootstrap */
+.aq-rejilla { display: grid; gap: 18px; }
+
+.aq-rejilla--2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.aq-rejilla--ancha-estrecha { grid-template-columns: 1.45fr 1fr; }
+
+@media (max-width: 900px) {
+  .aq-rejilla--ancha-estrecha { grid-template-columns: 1fr; }
+}
+
+.aq-aparece { animation: aq-aparecer 260ms ease both; }
+
+@keyframes aq-aparecer {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}

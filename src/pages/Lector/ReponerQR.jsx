@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { enviar } from '../../services/api'
- 
+
 function ReponerQR() {
   const [documento, setDocumento] = useState('')
   const [error, setError] = useState('')
   const [datos, setDatos] = useState(null)
   const [cargando, setCargando] = useState(false)
- 
+
   const reponer = async (e) => {
     e.preventDefault()
     setError('')
@@ -22,45 +22,67 @@ function ReponerQR() {
       setCargando(false)
     }
   }
- 
+
   return (
-    <div className="card shadow-sm">
-      <div className="card-body p-4">
-        <h6 className="fw-bold mb-3">Reponer el QR de un usuario</h6>
- 
-        {error && <div className="alert alert-danger py-2 small">{error}</div>}
- 
-        <form onSubmit={reponer} className="mb-3">
-          <label className="form-label">Número de documento</label>
-          <input
-            type="text"
-            className="form-control mb-3"
-            value={documento}
-            onChange={(e) => setDocumento(e.target.value)}
-            required
-          />
-          <button className="btn btn-primary w-100" disabled={cargando}>
+    <section className="aq-tarjeta">
+      <div className="aq-tarjeta__cabecera">
+        <h2 className="aq-tarjeta__titulo">Reponer el QR de un usuario</h2>
+      </div>
+
+      <div className="aq-tarjeta__cuerpo">
+        {error && (
+          <div className="aq-aviso aq-aviso--error">
+            <span className="aq-aviso__punto" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={reponer} style={{ marginBottom: 18 }}>
+          <div className="aq-campo-grupo">
+            <label className="aq-etiqueta">Número de documento</label>
+            <input
+              type="text"
+              className="aq-campo"
+              value={documento}
+              onChange={(e) => setDocumento(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            className="aq-btn aq-btn--primario aq-btn--bloque"
+            disabled={cargando}
+          >
             {cargando ? 'Generando...' : 'Generar QR nuevo'}
           </button>
         </form>
- 
+
         {datos && (
-          <div className="text-center border rounded p-3 bg-light">
-            <p className="fw-bold mb-2">{datos.nombre}</p>
+          <div
+            className="aq-marco aq-aparece"
+            style={{
+              background: '#fff',
+              border: '1px solid var(--aq-borde)',
+              padding: 22,
+              textAlign: 'center',
+            }}
+          >
+            <p className="aq-tabla__principal" style={{ marginBottom: 12 }}>
+              {datos.nombre}
+            </p>
             <img
               src={datos.qr}
               alt="QR nuevo"
-              className="img-fluid"
-              style={{ maxWidth: '220px' }}
+              style={{ width: '100%', maxWidth: 210 }}
             />
-            <p className="text-muted small mt-2 mb-0">
+            <p className="aq-ayuda" style={{ marginTop: 12 }}>
               Pídele que le tome una foto. El código anterior ya no sirve.
             </p>
           </div>
         )}
       </div>
-    </div>
+    </section>
   )
 }
- 
+
 export default ReponerQR

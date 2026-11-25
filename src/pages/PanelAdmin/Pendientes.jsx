@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { obtener, enviar } from '../../services/api'
-import { fechaHora } from '../../services/formato'
+import { fechaHora, claseInsignia } from '../../services/formato'
 import Cargando from '../../components/Cargando'
- 
+import EstadoVacio from '../../components/EstadoVacio'
+
 function Pendientes() {
   const [lista, setLista] = useState([])
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
   const [cargando, setCargando] = useState(true)
- 
+
   const cargar = async () => {
     setCargando(true)
     try {
@@ -20,11 +21,11 @@ function Pendientes() {
       setCargando(false)
     }
   }
- 
+
   useEffect(() => {
     cargar()
   }, [])
- 
+
   const accion = async (id, ruta, mensaje) => {
     setError('')
     setAviso('')
@@ -36,101 +37,148 @@ function Pendientes() {
       setError(err.message)
     }
   }
- 
+
   const rechazar = (id, nombre) => {
     const seguro = window.confirm(`¿Rechazar la solicitud de ${nombre}?`)
     if (seguro) accion(id, 'rechazar', 'Solicitud rechazada')
   }
- 
+
   if (cargando) return <Cargando />
- 
+
   return (
-    <div className="card shadow-sm">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h6 className="fw-bold mb-0">Solicitudes pendientes</h6>
-          <button className="btn btn-sm btn-outline-secondary" onClick={cargar}>
+    <div>
+      <div className="aq-aviso aq-aviso--info">
+        <span className="aq-aviso__punto" />
+        <span>
+          El botón <strong>Aprobar</strong> se habilita cuando alguien de
+          portería revisa los datos contra el documento físico.
+        </span>
+      </div>
+
+      {error && (
+        <div className="aq-aviso aq-aviso--error">
+          <span className="aq-aviso__punto" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {aviso && (
+        <div className="aq-aviso aq-aviso--ok">
+          <span className="aq-aviso__punto" />
+          <span>{aviso}</span>
+        </div>
+      )}
+
+      <section className="aq-tarjeta">
+        <div className="aq-tarjeta__cabecera">
+          <h2 className="aq-tarjeta__titulo">Solicitudes pendientes</h2>
+          <button
+            className="aq-btn aq-btn--contorno aq-btn--pequeno"
+            onClick={cargar}
+          >
             Actualizar
           </button>
         </div>
- 
-        {error && <div className="alert alert-danger py-2">{error}</div>}
-        {aviso && <div className="alert alert-success py-2">{aviso}</div>}
- 
-        <div className="table-responsive">
-          <table className="table align-middle">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Documento</th>
-                <th>Teléfono</th>
-                <th>Tipo</th>
-                <th>Solicitud</th>
-                <th>Revisado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lista.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="text-center text-muted py-4">
-                    No hay solicitudes pendientes
-                  </td>
-                </tr>
-              ) : (
-                lista.map((u) => (
-                  <tr key={u.id_usuario}>
-                    <td>{u.nombre}</td>
-                    <td>
-                      {u.tipo_documento} {u.documento}
-                    </td>
-                    <td>{u.telefono}</td>
-                    <td className="text-capitalize">{u.tipo_usuario}</td>
-                    <td>{fechaHora(u.fecha_registro)}</td>
-                    <td>
-                      {u.revisado ? (
-                        <span className="badge bg-success">Sí</span>
-                      ) : (
-                        <span className="badge bg-secondary">No</span>
-                      )}
-                    </td>
-                    <td>
-                      {!u.revisado && (
-                        <button
-                          className="btn btn-sm btn-outline-primary me-2"
-                          onClick={() =>
-                            accion(u.id_usuario, 'revisar', 'Datos revisados')
-                          }
-                        >
-                          Revisar
-                        </button>
-                      )}
-                      <button
-                        className="btn btn-sm btn-success me-2"
-                        disabled={!u.revisado}
-                        title={u.revisado ? '' : 'Primero hay que revisar los datos'}
-                        onClick={() =>
-                          accion(u.id_usuario, 'aprobar', 'Usuario aprobado, ya tiene QR')
-                        }
-                      >
-                        Aprobar
-                      </button>
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => rechazar(u.id_usuario, u.nombre)}
-                      >
-                        Rechazar
-                      </button>
-                    </td>
+
+        <div className="aq-tarjeta__cuerpo">
+          {lista.length === 0 ? (
+            <EstadoVacio
+              titulo="Todo al día"
+              texto="No hay solicitudes pendientes."
+            />
+          ) : (
+            <div className="aq-tabla-caja">
+              <table className="aq-tabla">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Tipo</th>
+                    <th>Solicitud</th>
+                    <th>Revisado</th>
+                    <th>Acciones</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {lista.map((u) => (
+                    <tr key={u.id_usuario}>
+                      <td data-etiqueta="Nombre">
+                        <span className="aq-tabla__principal">{u.nombre}</span>
+                        <div className="aq-tabla__secundario">
+                          {u.tipo_documento} {u.documento}
+                        </div>
+                      </td>
+
+                      <td data-etiqueta="Teléfono" className="aq-tabla__numero">
+                        {u.telefono}
+                      </td>
+
+                      <td data-etiqueta="Tipo">
+                        <span className={claseInsignia(u.tipo_usuario)}>
+                          {u.tipo_usuario}
+                        </span>
+                      </td>
+
+                      <td data-etiqueta="Solicitud">
+                        {fechaHora(u.fecha_registro)}
+                      </td>
+
+                      <td data-etiqueta="Revisado">
+                        {u.revisado ? (
+                          <span className="aq-insignia aq-insignia--ok">Sí</span>
+                        ) : (
+                          <span className="aq-insignia aq-insignia--apagado">
+                            No
+                          </span>
+                        )}
+                      </td>
+
+                      <td data-etiqueta="Acciones">
+                        <div className="aq-acciones">
+                          {!u.revisado && (
+                            <button
+                              className="aq-btn aq-btn--contorno aq-btn--pequeno"
+                              onClick={() =>
+                                accion(u.id_usuario, 'revisar', 'Datos revisados')
+                              }
+                            >
+                              Revisar
+                            </button>
+                          )}
+                          <button
+                            className="aq-btn aq-btn--acento aq-btn--pequeno"
+                            disabled={!u.revisado}
+                            title={
+                              u.revisado ? '' : 'Primero hay que revisar los datos'
+                            }
+                            onClick={() =>
+                              accion(
+                                u.id_usuario,
+                                'aprobar',
+                                'Usuario aprobado, ya tiene QR'
+                              )
+                            }
+                          >
+                            Aprobar
+                          </button>
+                          <button
+                            className="aq-btn aq-btn--peligro aq-btn--pequeno"
+                            onClick={() => rechazar(u.id_usuario, u.nombre)}
+                          >
+                            Rechazar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
     </div>
   )
 }
- 
+
 export default Pendientes

@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { obtener, enviar } from '../../services/api'
-import { fechaHora } from '../../services/formato'
+import { fechaHora, claseInsignia } from '../../services/formato'
 import Cargando from '../../components/Cargando'
- 
+import EstadoVacio from '../../components/EstadoVacio'
+
 function PendientesCelador() {
   const [lista, setLista] = useState([])
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(true)
- 
+
   const cargar = async () => {
     setCargando(true)
     try {
@@ -19,11 +20,11 @@ function PendientesCelador() {
       setCargando(false)
     }
   }
- 
+
   useEffect(() => {
     cargar()
   }, [])
- 
+
   const revisar = async (id) => {
     try {
       await enviar(`/usuarios/${id}/revisar`)
@@ -32,56 +33,81 @@ function PendientesCelador() {
       setError(err.message)
     }
   }
- 
-  if (cargando) return <Cargando />
- 
+
   return (
-    <div className="card shadow-sm">
-      <div className="card-body p-3">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h6 className="fw-bold mb-0">Solicitudes pendientes</h6>
-          <button className="btn btn-sm btn-outline-secondary" onClick={cargar}>
-            Actualizar
-          </button>
-        </div>
- 
-        {error && <div className="alert alert-danger py-2 small">{error}</div>}
- 
-        {lista.length === 0 && (
-          <p className="text-muted text-center mb-0 py-3">
-            No hay solicitudes pendientes.
-          </p>
-        )}
- 
-        {lista.map((u) => (
-          <div key={u.id_usuario} className="border rounded p-3 mb-2">
-            <div className="fw-semibold">{u.nombre}</div>
-            <div className="text-muted small">
-              {u.tipo_documento} {u.documento}
-              {' · '}
-              {u.telefono}
-            </div>
-            <div className="text-muted small text-capitalize mb-2">
-              {u.tipo_usuario}
-              {' · '}
-              {fechaHora(u.fecha_registro)}
-            </div>
- 
-            {u.revisado ? (
-              <span className="badge bg-success">Revisado</span>
-            ) : (
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={() => revisar(u.id_usuario)}
-              >
-                Marcar como revisado
-              </button>
-            )}
-          </div>
-        ))}
+    <section className="aq-tarjeta">
+      <div className="aq-tarjeta__cabecera">
+        <h2 className="aq-tarjeta__titulo">Solicitudes pendientes</h2>
+        <button
+          className="aq-btn aq-btn--contorno aq-btn--pequeno"
+          onClick={cargar}
+        >
+          Actualizar
+        </button>
       </div>
-    </div>
+
+      <div className="aq-tarjeta__cuerpo">
+        {error && (
+          <div className="aq-aviso aq-aviso--error">
+            <span className="aq-aviso__punto" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {cargando ? (
+          <Cargando />
+        ) : lista.length === 0 ? (
+          <EstadoVacio
+            titulo="Todo al día"
+            texto="No hay solicitudes esperando revisión."
+          />
+        ) : (
+          lista.map((u) => (
+            <div
+              key={u.id_usuario}
+              className="aq-tarjeta aq-aparece"
+              style={{ padding: 16, marginBottom: 12 }}
+            >
+              <div className="aq-tabla__principal">{u.nombre}</div>
+              <div className="aq-tabla__secundario">
+                {u.tipo_documento} {u.documento}
+                {' · '}
+                {u.telefono}
+              </div>
+              <div className="aq-tabla__secundario">
+                {fechaHora(u.fecha_registro)}
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  marginTop: 14,
+                }}
+              >
+                <span className={claseInsignia(u.tipo_usuario)}>
+                  {u.tipo_usuario}
+                </span>
+
+                {u.revisado ? (
+                  <span className="aq-insignia aq-insignia--ok">Revisado</span>
+                ) : (
+                  <button
+                    className="aq-btn aq-btn--primario aq-btn--pequeno"
+                    onClick={() => revisar(u.id_usuario)}
+                  >
+                    Marcar revisado
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </section>
   )
 }
- 
+
 export default PendientesCelador
