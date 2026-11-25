@@ -6,16 +6,28 @@ import { soloHora } from '../../services/formato'
 function Escaner() {
   const [resultado, setResultado] = useState(null)
   const [error, setError] = useState('')
-  const ocupado = useRef(false)
+  const [pausado, setPausado] = useState(false)
+
+  const escaner = useRef(null)   // la instancia, para poder pausarla y reanudarla
+  const ocupado = useRef(false)  // evita dos lecturas simultaneas
 
   useEffect(() => {
     let cancelado = false
-    let scanner = null
 
     const alLeer = async (texto) => {
       if (ocupado.current) return
       ocupado.current = true
       setError('')
+
+      // Se pausa ANTES de llamar al backend: mientras la peticion viaja,
+      // la camara ya no esta leyendo y el QR no se puede registrar otra vez.
+      try {
+        escaner.current?.pause(true)
+      } catch {
+        // si la libreria no pudo pausar, el guardia 'ocupado' sigue protegiendo
+      }
+      setPausado(true)
+
       try {
         const data = await enviar('/lector/escaneo', { token: texto.trim() })
         setResultado(data)
@@ -23,9 +35,7 @@ function Escaner() {
         setError(err.message)
         setResultado(null)
       } finally {
-        setTimeout(() => {
-          ocupado.current = false
-        }, 3000)
+        ocupado.current = false
       }
     }
 
@@ -36,20 +46,33 @@ function Escaner() {
       if (cancelado) return
       const contenedor = document.getElementById('reader')
       if (contenedor) contenedor.innerHTML = ''
-      scanner = new Html5QrcodeScanner(
+      escaner.current = new Html5QrcodeScanner(
         'reader',
         { fps: 10, qrbox: { width: 250, height: 250 } },
         false
       )
-      scanner.render(alLeer, () => {})
+      escaner.current.render(alLeer, () => {})
     }, 150)
 
     return () => {
       cancelado = true
       clearTimeout(temporizador)
-      if (scanner) scanner.clear().catch(() => {})
+      if (escaner.current) escaner.current.clear().catch(() => {})
+      escaner.current = null
     }
   }, [])
+
+  // El celador retira el QR y pulsa este boton para volver a leer.
+  const nuevoEscaneo = () => {
+    setResultado(null)
+    setError('')
+    setPausado(false)
+    try {
+      escaner.current?.resume()
+    } catch {
+      // si no se pudo reanudar, basta con recargar la pestana
+    }
+  }
 
   const esEntrada = resultado?.tipo_movimiento === 'entrada'
 
@@ -84,16 +107,39 @@ function Escaner() {
         </div>
       )}
 
-      <p
-        style={{
-          textAlign: 'center',
-          color: 'var(--aq-texto-suave)',
-          fontSize: 13,
-          marginTop: 18,
-        }}
-      >
-        Apunta la cámara al código. El sistema alterna entrada y salida solo.
-      </p>
+      {pausado && (
+        <div style={{ marginTop: 16 }}>
+          <button
+            className="aq-btn aq-btn--primario aq-btn--bloque"
+            onClick={nuevoEscaneo}
+          >
+            Nuevo escaneo
+          </button>
+          <p
+            style={{
+              textAlign: 'center',
+              color: 'var(--aq-texto-suave)',
+              fontSize: 13,
+              marginTop: 10,
+            }}
+          >
+            Retira el código de la cámara antes de continuar.
+          </p>
+        </div>
+      )}
+
+      {!pausado && (
+        <p
+          style={{
+            textAlign: 'center',
+            color: 'var(--aq-texto-suave)',
+            fontSize: 13,
+            marginTop: 18,
+          }}
+        >
+          Apunta la cámara al código. El sistema alterna entrada y salida solo.
+        </p>
+      )}
     </div>
   )
 }
