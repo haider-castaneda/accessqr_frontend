@@ -18,3 +18,16 @@ export function hoy() {
   const dia = String(f.getDate()).padStart(2, 0)
   return `${f.getFullYear()}-${mes}-${dia}`
 }
+
+// Cada estado del sistema tiene siempre el mismo color
+export function claseInsignia(valor) {
+  const mapa = {
+    activo: 'ok',
+    entrada: 'ok',
+    pendiente: 'espera',
+    salida: 'espera',
+    inactivo: 'apagado',
+    rechazado: 'alto',
+  }
+  return `aq-insignia aq-insignia--${mapa[valor] || 'info'}`
+}
