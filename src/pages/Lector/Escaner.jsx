@@ -29,6 +29,9 @@ function Escaner() {
       }
     }
 
+    // El modo estricto de React monta, desmonta y vuelve a montar enseguida.
+    // Con esta espera, el primer montaje se cancela antes de encender la
+    // camara y solo queda un escaner.
     const temporizador = setTimeout(() => {
       if (cancelado) return
       const contenedor = document.getElementById('reader')
@@ -52,30 +55,43 @@ function Escaner() {
 
   return (
     <div>
-      <div id="reader" className="border rounded shadow-sm bg-white" />
+      <div id="reader" className="aq-marco" />
 
       {error && (
-        <div className="alert alert-danger mt-3 text-center fw-bold">{error}</div>
+        <div className="aq-aviso aq-aviso--error" style={{ marginTop: 16 }}>
+          <span className="aq-aviso__punto" />
+          <span>{error}</span>
+        </div>
       )}
 
       {resultado && (
         <div
-          className={`alert mt-3 text-center ${esEntrada ? 'alert-success' : 'alert-warning'}`}
+          className={`aq-sello ${
+            esEntrada ? 'aq-sello--entrada' : 'aq-sello--salida'
+          }`}
+          style={{ marginTop: 16 }}
         >
-          <div className="display-6 fw-bold text-uppercase mb-2">
-            {resultado.tipo_movimiento}
-          </div>
-          <div className="fs-5 fw-semibold">{resultado.nombre}</div>
-          <div className="text-muted">
+          <div className="aq-sello__tipo">{resultado.tipo_movimiento}</div>
+          <div className="aq-sello__nombre">{resultado.nombre}</div>
+          <div className="aq-sello__datos">
             {resultado.documento}
             {' · '}
-            <span className="text-capitalize">{resultado.tipo_usuario}</span>
+            <span style={{ textTransform: 'capitalize' }}>
+              {resultado.tipo_usuario}
+            </span>
           </div>
-          <div className="mt-2">{soloHora(resultado.fecha_hora)}</div>
+          <span className="aq-sello__hora">{soloHora(resultado.fecha_hora)}</span>
         </div>
       )}
 
-      <p className="text-muted small mt-3 text-center">
+      <p
+        style={{
+          textAlign: 'center',
+          color: 'var(--aq-texto-suave)',
+          fontSize: 13,
+          marginTop: 18,
+        }}
+      >
         Apunta la cámara al código. El sistema alterna entrada y salida solo.
       </p>
     </div>
