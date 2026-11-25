@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { cerrarSesion, hayToken, nombreActual, rolActual } from '../services/sesion'
- 
+import logo from '../assets/logo.png' 
+
 // Las unicas pantallas donde tiene sentido mostrar la sesion.
 const RUTAS_PRIVADAS = ['/panel-admin', '/lector']
  
@@ -21,7 +22,7 @@ function Navbar() {
       <div className="aq-barra__interior">
         <Link to="/" className="aq-marca">
           <span className="aq-marca__icono">
-            <i /><i /><i /><i />
+            <img src={logo} alt="AccessQR" />
           </span>
           AccessQR
         </Link>

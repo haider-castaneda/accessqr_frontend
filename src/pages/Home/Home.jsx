@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { enviar } from '../../services/api'
 import { guardarSesion, rutaSegunRol } from '../../services/sesion'
+import logo from '../../assets/logo.png'
 
 function Home() {
   const navigate = useNavigate()
@@ -193,7 +194,7 @@ function Home() {
           }`}
         >
           <span className="aq-portada__logo">
-            <i /><i /><i /><i />
+            <img src={logo} alt="AccessQR" />
           </span>
 
           <span className="aq-portada__marca">AccessQR</span>
