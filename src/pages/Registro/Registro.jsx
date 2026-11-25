@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
-import { peticionApi } from '../../services/api'
+import { enviar } from '../../services/api'
 
 function Registro() {
   const navigate = useNavigate()
@@ -12,12 +12,13 @@ function Registro() {
     telefono: '',
     tipo_usuario: '',
     contrasena: '',
-    confirmar_contrasena: ''
+    confirmar_contrasena: '',
   })
   const [error, setError] = useState('')
   const [cargando, setCargando] = useState(false)
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -28,121 +29,146 @@ function Registro() {
     }
     setCargando(true)
     try {
-      const data = await peticionApi('/registro', {
-        method: 'POST',
-        body: JSON.stringify(formData)
+      const data = await enviar('/registro', formData)
+      navigate('/confirmacion', {
+        state: { usuario: formData, respuesta: data },
       })
-      navigate('/confirmacion', { state: { usuario: formData, respuesta: data } })
     } catch (err) {
-      setError(err.message || 'Error al registrar solicitud')
+      setError(err.message || 'Error al registrar la solicitud')
     } finally {
       setCargando(false)
     }
   }
 
   return (
-    <div>
+    <div className="aq-pagina">
       <Navbar />
-      <div className="container mt-5" style={{ maxWidth: '600px' }}>
-        <h2 className="fw-bold mb-1 text-black">Crear cuenta</h2>
-        <p className="text-success mb-4">Completa tus datos para obtener tu código QR de acceso</p>
-        {error && <div className="alert alert-danger py-2 small text-center mb-3">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Nombre completo</label>
-            <input
-              type="text"
-              className="form-control"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-              required
-            />
+
+      <main className="aq-contenido aq-contenido--medio">
+        <div className="aq-encabezado-pagina">
+          <h1>Crear mi cuenta</h1>
+          <p>Completa tus datos y la administración revisará tu solicitud.</p>
+        </div>
+
+        {error && (
+          <div className="aq-aviso aq-aviso--error">
+            <span className="aq-aviso__punto" />
+            <span>{error}</span>
           </div>
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Tipo de documento</label>
-              <select
-                className="form-select"
-                name="tipo_documento"
-                value={formData.tipo_documento}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccionar...</option>
-                <option value="CC">Cédula de ciudadanía</option>
-                <option value="TI">Tarjeta de identidad</option>
-                <option value="CE">Cédula de extranjería</option>
-              </select>
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Número de documento</label>
+        )}
+
+        <section className="aq-tarjeta">
+          <form
+            className="aq-tarjeta__cuerpo aq-tarjeta__cuerpo--amplio"
+            onSubmit={handleSubmit}
+          >
+            <div className="aq-campo-grupo">
+              <label className="aq-etiqueta">Nombre completo</label>
               <input
                 type="text"
-                className="form-control"
-                name="documento"
-                value={formData.documento}
+                className="aq-campo"
+                name="nombre"
+                value={formData.nombre}
                 onChange={handleChange}
                 required
               />
             </div>
-          </div>
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Teléfono</label>
-              <input
-                type="text"
-                className="form-control"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                required
-              />
+
+            <div className="aq-rejilla aq-rejilla--2" style={{ gap: '0 16px' }}>
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Tipo de documento</label>
+                <select
+                  className="aq-campo"
+                  name="tipo_documento"
+                  value={formData.tipo_documento}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar...</option>
+                  <option value="CC">Cédula de ciudadanía</option>
+                  <option value="TI">Tarjeta de identidad</option>
+                  <option value="CE">Cédula de extranjería</option>
+                </select>
+              </div>
+
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Número de documento</label>
+                <input
+                  type="text"
+                  className="aq-campo"
+                  name="documento"
+                  value={formData.documento}
+                  onChange={handleChange}
+                  required
+                />
+                <p className="aq-ayuda">Solo números, entre 5 y 20 dígitos.</p>
+              </div>
+
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Teléfono</label>
+                <input
+                  type="text"
+                  className="aq-campo"
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Tipo de vinculación</label>
+                <select
+                  className="aq-campo"
+                  name="tipo_usuario"
+                  value={formData.tipo_usuario}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Seleccionar...</option>
+                  <option value="empleado">Empleado</option>
+                  <option value="miembro">Miembro</option>
+                  <option value="aprendiz">Aprendiz</option>
+                  <option value="instructor">Instructor</option>
+                </select>
+              </div>
+
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Contraseña</label>
+                <input
+                  type="password"
+                  className="aq-campo"
+                  name="contrasena"
+                  value={formData.contrasena}
+                  onChange={handleChange}
+                  required
+                />
+                <p className="aq-ayuda">Mínimo 8 caracteres.</p>
+              </div>
+
+              <div className="aq-campo-grupo">
+                <label className="aq-etiqueta">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  className="aq-campo"
+                  name="confirmar_contrasena"
+                  value={formData.confirmar_contrasena}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Tipo de usuario</label>
-              <select
-                className="form-select"
-                name="tipo_usuario"
-                value={formData.tipo_usuario}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccionar...</option>
-                <option value="aprendiz">Aprendiz</option>
-                <option value="instructor">Instructor</option>
-              </select>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Contraseña</label>
-              <input
-                type="password"
-                className="form-control"
-                name="contrasena"
-                value={formData.contrasena}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label">Confirmar contraseña</label>
-              <input
-                type="password"
-                className="form-control"
-                name="confirmar_contrasena"
-                value={formData.confirmar_contrasena}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-          <button type="submit" className="btn btn-success w-100 mt-2" disabled={cargando}>
-            {cargando ? 'REGISTRANDO...' : 'Registrarse'}
-          </button>
-        </form>
-      </div>
+
+            <button
+              type="submit"
+              className="aq-btn aq-btn--primario aq-btn--bloque"
+              disabled={cargando}
+            >
+              {cargando ? 'Enviando...' : 'Enviar solicitud'}
+            </button>
+          </form>
+        </section>
+      </main>
     </div>
   )
 }

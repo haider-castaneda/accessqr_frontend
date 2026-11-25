@@ -7,18 +7,25 @@ function MiQR() {
  
   if (!datos?.qr) {
     return (
-      <div>
+      <div className="aq-pagina">
         <Navbar />
-        <div className="container mt-5 text-center" style={{ maxWidth: '500px' }}>
-          <div className="card shadow-sm p-4">
-            <h5 className="fw-bold mb-3">No hay ningún QR para mostrar</h5>
-            <p className="text-muted">
-              Por seguridad, el código no se guarda en el navegador. Entra con tu
-              documento y tu contraseña para verlo.
-            </p>
-            <Link to="/" className="btn btn-primary mt-2">Ir al inicio</Link>
-          </div>
-        </div>
+        <main className="aq-contenido aq-contenido--estrecho">
+          <section className="aq-tarjeta">
+            <div className="aq-tarjeta__cuerpo aq-tarjeta__cuerpo--amplio"
+                 style={{ textAlign: 'center' }}>
+              <h1 style={{ fontSize: 20, marginBottom: 10 }}>
+                No hay ningún QR para mostrar
+              </h1>
+              <p style={{ color: 'var(--aq-texto-suave)', marginBottom: 20 }}>
+                Por seguridad el código no se guarda en el navegador. Entra
+                con tu documento y tu contraseña para verlo.
+              </p>
+              <Link to="/" className="aq-btn aq-btn--primario">
+                Ir al inicio
+              </Link>
+            </div>
+          </section>
+        </main>
       </div>
     )
   }
@@ -33,38 +40,49 @@ function MiQR() {
   }
  
   return (
-    <div>
+    <div className="aq-pagina">
       <Navbar />
-      <div className="container mt-4 mb-5" style={{ maxWidth: '480px' }}>
-        <div className="card shadow-sm text-center">
-          <div className="card-body p-4">
-            <h4 className="fw-bold mb-1">{datos.nombre}</h4>
-            <p className="text-muted small mb-4">Tu código de acceso</p>
+      <main className="aq-contenido aq-contenido--estrecho">
+        <div className="aq-credencial aq-aparece">
  
-            <div className="border rounded p-3 mb-4 bg-light">
-              <img
-                src={datos.qr}
-                alt="Código QR de acceso"
-                className="img-fluid"
-                style={{ maxWidth: '240px' }}
-              />
-            </div>
+          <div className="aq-credencial__tapa">
+            <span
+              className="aq-insignia"
+              style={{ background: 'rgba(255,255,255,.16)', color: '#fff' }}
+            >
+              Cuenta activa
+            </span>
+            <h1 className="aq-credencial__nombre">{datos.nombre}</h1>
+            <span className="aq-credencial__rol">Código de acceso</span>
+          </div>
  
-            <button className="btn btn-primary w-100 mb-3" onClick={descargar}>
+          <div className="aq-credencial__muesca">
+            <span className="aq-credencial__linea" />
+          </div>
+ 
+          <div className="aq-credencial__qr">
+            <img src={datos.qr} alt="Código QR de acceso" />
+          </div>
+ 
+          <div className="aq-credencial__pie">
+            <button
+              className="aq-btn aq-btn--primario aq-btn--bloque"
+              onClick={descargar}
+            >
               Descargar imagen
             </button>
- 
-            <p className="text-muted small mb-0">
-              Es personal e intransferible. Guárdalo en tu celular: en portería
+            <p className="aq-credencial__nota">
+              Personal e intransferible. Guárdalo en tu celular: en portería
               basta con mostrarlo en la pantalla.
             </p>
           </div>
+ 
         </div>
  
-        <div className="text-center mt-3">
-          <Link to="/" className="btn btn-link">Volver al inicio</Link>
-        </div>
-      </div>
+        <p style={{ textAlign: 'center', marginTop: 18 }}>
+          <Link to="/">Volver al inicio</Link>
+        </p>
+      </main>
     </div>
   )
 }
